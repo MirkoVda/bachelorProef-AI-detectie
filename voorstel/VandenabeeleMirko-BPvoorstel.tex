@@ -1,0 +1,180 @@
+%==============================================================================
+% Sjabloon onderzoeksvoorstel bachproef
+%==============================================================================
+% Gebaseerd op document class `hogent-article'
+% zie <https://github.com/HoGentTIN/latex-hogent-article>
+
+% Voor een voorstel in het Engels: voeg de documentclass-optie [english] toe.
+% Let op: kan enkel na toestemming van de bachelorproefcoördinator!
+\documentclass{hogent-article}
+
+% Invoegen bibliografiebestand
+\addbibresource{voorstel.bib}
+
+% Informatie over de opleiding, het vak en soort opdracht
+\studyprogramme{Professionele bachelor toegepaste informatica}
+\course{Bachelorproef}
+\assignmenttype{Onderzoeksvoorstel}
+% Voor een voorstel in het Engels, haal de volgende 3 regels uit commentaar
+% \studyprogramme{Bachelor of applied information technology}
+% \course{Bachelor thesis}
+% \assignmenttype{Research proposal}
+
+\academicyear{2025-2026}
+
+\title{Het opsporen van gemanipuleerde foto’s in een tijdperk van AI}
+
+\author{Mirko Vandenabeele}
+\email{mirko.vandenabeele@student.hogent.be}
+
+
+% TODO: Geef de co-promotor op
+\supervisor[Co-promotor]{... (..., \href{mailto:temp}{temp})}
+
+% Binnen welke specialisatierichting uit 3TI situeert dit onderzoek zich?
+% Kies uit deze lijst:
+%
+% - Mobile \& Enterprise development
+% - AI \& Data Engineering
+% - Functional \& Business Analysis
+% - System \& Network Administrator
+% - Mainframe Expert
+% - Als het onderzoek niet past binnen een van deze domeinen specifieer je deze
+%   zelf
+%
+\specialisation{AI \& Data Engineering}
+\keywords{Generatieve AI, Deepfake-detectie, Computer Vision, CNN, Vision Transformers.}
+
+\begin{document}
+
+\begin{abstract}
+  De recente opkomst van geavanceerde generatieve AI-modellen zoals Midjourney, Adobe Firefly, DALL·E en Photoshop’s ‘Generative Fill’ maakt het mogelijk om uiterst realistische, maar volledig kunstmatig gegenereerde of gemanipuleerde beelden te creëren. Deze evolutie vormt een toenemende uitdaging voor organisaties die moeten kunnen vertrouwen op de authenticiteit van visuele informatie, waaronder factcheckers, onderwijsinstellingen en digitale platformen die met gebruikersfoto’s werken. Traditionele forensische technieken blijken steeds minder effectief tegen moderne AI-systemen, wat de noodzaak benadrukt voor robuuste, data-gedreven detectiemethoden. Dit onderzoek heeft als doel te bepalen hoe artificiële intelligentie op een betrouwbare manier onderscheid kan maken tussen authentieke beelden en AI-gegenereerde of AI-gemanipuleerde varianten, en welke modelarchitecturen hiervoor de hoogste nauwkeurigheid opleveren. Hiertoe worden verschillende deep learning-benaderingen onderzocht, waaronder Convolutional Neural Networks, Vision Transformers en hybride modellen. De modellen worden getraind en geëvalueerd op zowel bestaande datasets, zoals FaceForensics++, als op zelf gegenereerde manipulaties afkomstig van diverse generatieve AI-tools. Daarnaast wordt onderzocht in welke mate de detectieprestaties beïnvloed worden door compressie, schaling en filtering, zodat de resultaten aansluiten bij reële situaties zoals de beeldverwerking die plaatsvindt op sociale media en datingplatformen. Verwacht wordt dat Vision Transformers beter presteren bij het identificeren van subtiele artefacten, terwijl CNN-gebaseerde modellen robuuster blijven onder sterke compressie. De bevindingen van deze studie kunnen bijdragen aan de ontwikkeling van een praktische, gebruiksvriendelijke tool die automatisch AI-manipulaties detecteert en markeert. Dit biedt waarde voor organisaties binnen sectoren zoals datingsites, nieuwsredacties, sociale mediaplatformen en fotowedstrijden, omdat zij grote hoeveelheden beelden verwerken en baat hebben bij een betrouwbare verificatie om misleiding en identiteitsfraude te voorkomen.
+\end{abstract}
+
+\tableofcontents
+
+% De hoofdtekst van het voorstel zit in een apart bestand, zodat het makkelijk
+% kan opgenomen worden in de bijlagen van de bachelorproef zelf.
+\section{Inleiding}%
+\label{sec:inleiding}
+De recente vooruitgang in generatieve artificiële intelligentie heeft geleid tot systemen die in staat zijn om afbeeldingen te creëren of bestaande foto's te manipuleren terwijl dit amper merkbaar is. Tools zoals Midjourney,Adobe generative fill en DALL-E maken het zeer eenvoudig om beelden te produceren die amper te onderscheiden zijn van authentieke fotografie. Hoewel men in eerste opzicht zou denken dat dit een positieve invloed kan hebben op de maatschappij, zorgt dit tegelijk voor een vergrotend risico op digitale misleiding. Er zijn echter organisaties waarvoor betrouwbare visuele informatie van groot belang is, denk aan nieuwsredacties, onderwijsinstellingen, online platformen,.. Zij worden momenteel geconfronteerd met de uitdaging om de echtheid van beelden te kunnen garanderen.
+
+De doelgroep van dit onderzoek bestaat uit organisaties en IT-professionals die behoefte hebben aan geautomatiseerde controle van beeldmateriaal. Dit kunnen platformen zijn die grote hoeveelheden gebruikersfoto's verwerken, maar dit kunnen evengoed redacties zijn die geconfronteerd worden met mogelijke beeldmanipulatie in ingezonden materiaal, of onderwijsinstellingen die AI-gebruik in opdrachten willen herkennen. In deze contexten vormt betrouwbaarheid van visuele info een cruciale rol, terwijl menselijke beoordeling steeds vaker tekortschiet.
+
+De centrale probleemstelling luidt dat generatieve AI-systemen beelden kunnen produceren die voor het menselijk oog nauwelijks te onderscheiden zijn van authentieke foto's. Traditionele methoden gebruiken vaak technische (meta)data of zichtbare aanpassingen, maar deze blijken vaak onvoldoende om manipulaties te zien. Dit creëert een nood aan en geautomatiseerde, datagedreven aanpak.
+
+Daaruit volgt de centrale onderzoeksvraag: \textbf{op welke manier kan artificiële intelligentie betrouwbaar onderscheid maken tussen authentieke en AI-gemanipuleerde beelden, en welke methoden of modellen leveren hierbij de hoogste nauwkeurigheid op?} Om deze vraag te beantwoorden wordt onderzocht welke bestaande detectiemodellen het meest performant zijn, welke visuele patronen of kenmerken zij leren herkennen en hoe accuraat deze detectie blijft wanneer beelden gecomprimeerd, geschaald of op een andere manier bewerkt worden.
+
+De doelstelling van dit onderzoek is om op basis van bestaande wetenschappelijke experimenten en evaluaties een oplossing uit te werken die organisaties ondersteunt bij het automatisch herkennen van AI-bewerkte afbeeldingen. Het eindresultaat is een proof-of-concept model dat aantoont hoe dergelijke detectie in praktijk kan worden toegepast. 
+
+\section{Literatuurstudie}%
+\label{sec:literatuurstudie}
+De snelle opkomst van generatieve AI-modellen heeft geleid tot een sterke toename van realistische maar volledig kunstmatige beelden. In de wetenschappelijke literatuur wordt deze categorie vaak omschreven als \emph{deepfakes}, hoewel de term oorspronkelijk meer betrekking had tot gemanipuleerde video's. Recente tools zoals Midjourney, DALL-E en Adobe Firefly produceren echter stilstaande beelden die moeilijk te onderscheiden zijn van echte fotografie. Volgens verschillende overzichtsstudies is deepfake-detectie uitgegroeid tot een volwaardig onderzoeksdomein met grote maatschappelijke relevantie \autocite{Gong2024}. De nood aan betrouwbare detectiemethoden is de voorbije jaren sterk toegenomen doordat generatieve modellen steeds vaker worden toegepast in contexten waar visuele authenticiteit essentieel is.
+
+\subsection{Bestaande onderzoeken en detectiebenaderingen}
+In een uitgebreide survey beschrijven \textcite{Gong2024} de evolutie van deepfake-detectiemethoden en tonen zij aan dat de meeste bestaande systemen gebaseerd zijn op convolutionele neurale netwerken (CNN's). Deze modellen zijn in staat om lokale artefacten zoals onnatuurlijke texturen, randafwijkingen of inconsistent kleurgebruik op te sporen. \textcite{Akhtar2023} bevestigt dat CNN's lange tijd dominant waren binnen dit domein, maar merkt ook op dat de generaliseerbaarheid van dergelijke modellen beperkt blijft. Modellen die op 1 type manipulatie getraind worden blijken vaak slecht te presteren op nieuwere generatieve technieken.
+
+Nieuwere onderzoeken richten zich op Vision Transformers (ViT's), die beelden verwerken op basis van patches in plaats van convoluties. Hierdoor kunnen zij globale relaties en patronen beter modelleren dan CNN's. \textcite{Zhou2024} tonen aan dat hybride modellen (combinaties van CNN's en ViT's) significant betere prestaties leveren dan modellen die slechts 1 techniek gebruiken. Zij concluderen dat de sterkte van CNN's in het detecteren van lokale anomalieën goed aangevuld wordt door de capaciteit van ViT's om globale inconsistenties te herkennen. Deze hybride benadering wordt in recente literatuur vaak als een veelbelovende richting voor verdere ontwikkeling gezien.
+
+\subsection{Datasets en generaliseerbaarheid}
+Een terugkerend probleem binnen bestaande literatuur is de afhankelijkheid van beperkte en vaak verouderde datasets. Veel detectiemodellen worden getraind op datasets zoals FaceForensics++, die voornamelijk manipulaties bevatten afkomstig van oudere generatieve modellen. Daardoor presteren ze slecht op beelden die afkomstig zijn van moderne diffusion models \autocite{Gong2024}. Volgens \textcite{Akhtar2023} zorgt deze kloof ervoor dat detectors zelden robuust zijn voor \emph{out-of-distribution} manipulaties, wat een uitdaging vormt voor hun inzetbaarheid in realistische toepassingen.
+
+\subsection{Praktische uitdagingen in real-world scenario's}
+Een belangrijk inzicht uit de literatuur is dat detectiemodellen vaak aanzienlijk slechter presteren wanneer ze toegepast worden in real-world omgevingen. In hun analyse van een operationele detectiedienst tonen \textcite{Baxevanakis2022} aan dat compressie, verkleining en filters (typisch voor sociale media en online platformen) de nauwkeurigheid drastisch doen dalen. Modellen dat binnen gecontroleerde onderzoeksomgevingen uitstekende prestaties behalen, blijken dus niet altijd inzetbaar te zijn waar beeldmateriaal vervormd of geoptimaliseerd wordt. Deze observatie vormt een cruciale motivatie voor onderzoeken die zich richten op robuustheid.
+
+\subsection{Open vragen en positionering van dit onderzoek}
+Door de literatuur is het duidelijk dat er nog meerdere problemen bestaan. Ten eerste blijft het moeilijk om modellen te ontwikkelen die goed presteren op volledig nieuwe generatieve technieken. Ten tweede ontbreekt het aan datasets die representatief zijn voor moderne AI-manipulaties, waardoor detectors snel verouderen. Ten derde is de impact van beeldbewerkingen op detectieprestaties nog onvoldoende onderzocht, hoewel deze een cruciale rol spelen in praktische toepassingen \autocite{Baxevanakis2022}. 
+
+Dit onderzoek sluit bij deze open vragen aan door te bestuderen welke modellen het meest geschikt zijn voor de detectie van moderne, realistische AI-manipulaties en in welke mate hun prestaties beïnvloed worden door compressie, filtering en andere bewerkingen. 
+
+\section{Methodologie}
+\label{sec:methodologie}
+
+De methodologie bestaat uit een iteratief onderzoeks-en ontwikkeltraject dat in vier fasen wordt uitgevoerd. Elke fase levert een concreet deelresultaat op dat input vormt voor de volgende fase. De fasen overlappen gedeeltelijk zodat onderzoeksresultaten snel verwerkt kunnen worden in nieuwe experimenten. Deze aanpak is geschikt om de onderzoeksvraag te beantwoorden, aangezien detectiemodellen voor AI-manipulaties stapsgewijs geoptimaliseerd worden op basis van inzichten. De gekozen onderzoeksmethoden zijn theoretisch goed onderbouwd en sluiten aan bij gangbare werkwijzen.
+
+\subsection{Fase 1: Definitie van detectiescope en samenstelling van de dataset}
+
+In de eerste fase wordt afgebakend welke vormen van AI-manipulatie onderzocht worden. Op basis van literatuur en onderzoek van bestaande generatieve modellen (zoals Midjourney, DALL-E en Adobe Firefly) wordt een lijst opgesteld van manipulaties die relevant zijn voor realistische toepassingen, zoals sociale media, datingsites en nieuwsplatformen. Vervolgens wordt een dataset samengesteld bestaande uit:
+
+\begin{itemize}
+    \item authentieke foto's afkomstig uit open datasets,
+    \item AI-gegenereerde beelden afkomstig van meerdere generatieve tools,
+    \item gemanipuleerde beelden waarbij generatieve AI slechts een deel van de afbeelding aanpast
+\end{itemize}
+
+Per afbeelding worden metadata vastgelegd zoals resolutie, compressieniveau en bronmodel. Deze dataset wordt automatisch opgesplitst in train-, validatie- en testsets. De fase omvat ook een kwaliteitscontrole om te verzekeren dat de dataset representatief is voor variaties in een realistische omgeving.
+
+\paragraph{Deliverables:}
+\begin{itemize}
+    \item Afgebakend overzicht van relevante manipulatietypes.
+    \item Dataset met authentieke, gegenereerde en gemanipuleerde beelden
+    \item Document met datasetstatistieken (aantal beelden per type, resoluties, variaties).
+\end{itemize}
+
+\paragraph{Duur:} 2 werkweken.
+
+\subsection{Fase 2: Modelselectie en eerste detectie-experimenten}
+
+In deze fase worden drie modelarchitecturen geselecteerd op basis van bevindingen uit de literatuurstudie: een Convolutional Neural Network (CNN), een Vision Transformer (ViT) en een hybride model. Voor elk model wordt een eerste baseline getraind op de dataset uit fase 1. De trainingsprocedures worden gedocumenteerd, inclusief gebruikte hyperparameters, lossfuncties en optimalisatietechnieken.
+
+Tijdens deze fase worden experimenten opgezet om te onderzoeken welke beeldkenmerken het meest informatief zijn voor detectie (bijvoorbeeld lokale textuurartefacten tegenover globale inconsistenties). De prestaties worden geëvalueerd op de validatieset.
+
+\paragraph{Deliverables:}
+
+\begin{itemize}
+    \item Drie getrainde basismodellen (CNN, ViT, hybride)
+    \item Eerste vergelijkende analyse van nauwkeurigheid, precisie, recall en F1-score
+    \item Technisch rapport met beschrijving van modelhyperparameters
+\end{itemize}
+
+\paragraph{Duur:} 3 werkweken
+
+\subsection{Fase 3: Robuustheidanalyse onder realistische beeldvormingen}
+
+Aangezien eerdere literatuur aantoont dat detectiemodellen gevoelig zijn voor compressie, schaling en filtering, richt deze fase zich op de robuustheid. De testset wordt bewerkt met realistische transformaties zoals JPEG-compressie, resolutieverkleining en kleurfilters.
+
+Alle modellen worden opnieuw geëvalueerd op deze vervormde beelden. Hierbij wordt geanalyseerd welke modellen het meest bestand zijn tegen degradatie en welke patronen het meest verantwoordelijk zijn voor foutclassificaties.
+
+\paragraph{Deliverables:}
+\begin{itemize}
+    \item Robuustheidsrapportage per model.
+    \item Vergelijkingen van prestaties onder verschillende vervormingen.
+    \item Identificatie van zwakke punten en voorstel tot verfijning.
+\end{itemize}
+
+\paragraph{Duur:} 2 werkweken.
+
+\subsection{Fase 4: Ontwikkeling van een proof-of-concept detectietool}
+
+Op basis van de resultaten uit fase 2 en 3 wordt het best presterende model geïntegreerd in een proof-of-concept (PoC). De PoC bestaat uit een eenvoudige webinterface of command-line tool waarmee afbeeldingen kunnen worden opgeladen, geanalyseerd en beoordeeld als authentiek of gemanipuleerd. Naast de classificatie geeft de tool een interpretatie van het resultaat, bijvoorbeeld via een heatmap die aangeeft welke beeldregio's het model verdacht vindt.
+
+De PoC wordt vervolgens getest met een reeks beeldtests afkomstig van verschillende realistische bronnen om te evalueren of de tool bruikbaar is in praktijkomgevingen.
+
+\paragraph{Deliverables:}
+\begin{itemize}
+    \item Werkende proof-of-concept detectietool
+    \item Demonstratievideo of handleiding
+    \item Eindrapport waarin modelkeuze, prestaties en beperkingen worden samengebracht.
+\end{itemize}
+    
+\paragraph{Duur:} 3 werkweken.
+
+\section{Verwacht resultaat en conclusie}
+\label{sec:verwachte_resultaten}
+Het onderzoek heeft als doel te bepalen in welke mate AI in staat is om onderscheid te maken tussen authentieke en gegenereerde of gemanipuleerde beelden. Op basis van de literatuur en de methodologische opzet worden een aantal concrete verwachtingen geformuleerd.
+
+Ten eerste wordt verwacht dat vision transformers beter zullen presteren dan uitsluitend op convoluties gebaseerde modellen, omdat zij globale patronen in een afbeelding sterker kunnen modelleren. CNN-gebaseerde modellen zullen naar verwachting robuuster zijn in situaties waarin afbeeldingen zwaar gecomprimeerd of sterk verkleind zijn. Hybride modellen worden verwacht als de meest evenwichtige en consistente benadering over verschillende bewerkingen heen.
+
+Daarnaast wordt verwacht dat de prestaties van alle modellen beïnvloed zullen worden door bewerkingen zoals compressie, schaling en filters. Deze bewerkingen komen veel voor op sociale media, datingsites of nieuwsplatformen. Op basis hiervan wordt een daling van de nauwkeurigheid voorspeld naarmate de compressiegraad toeneemt of wanneer beelden sterk verkleind worden. Om deze verwachtingen concreet te maken, wordt voorzien om resultaten te visualiseren aan de hand van grafieken waarin je de nauwkeurigheid en compressiegraad zal zien.
+
+Het verwachte eindresultaat van het onderzoek bestaat uit drie onderdelen. Ten eerste een gefundeerde vergelijking van verschillende detectiemodellen, met duidelijke inzichten in hun sterktes en beperkingen. Ten tweede een proof-of-concept waarin een getraind model automatisch afbeeldingen kan analyseren en aanduiden of er aanwijzingen zijn van manipulatie. Ten derde een set aanbevelingen voor bedrijven die met grote datasets werken. Deze aanbevelingen zullen zich richten op welke modellen het meest geschikt zijn, welke beperkingen men moet verwachten en welke maatregelen de betrouwbaarheid kunnen verhogen.
+
+De meerwaarde voor de doelgroep ligt in het aanbieden van een concreet toepasbaar en wetenschappelijk onderbouwd kader om beeldmanipulatie te detecteren. Organisaties zoals online platformen, nieuwsredacties en onderwijsinstellingen kunnen deze inzichten gebruiken om misleiding en identiteitsfraude te beperken en de betrouwbaarheid van beeldmateriaal te verhogen. Hoewel de effectieve resultaten kunnen afwijken van de verwachtingen, zal dit op zichzelf waardevolle inzichten opleveren, bijvoorbeeld door welke omstandigheden bepaalde modellen slechter of beter presteren. In beide gevallen draagt het onderzoek bij aan een beter begrip van mogelijkheden en beperkingen van AI-gebaseerde verificaties.
+
+
+
+
+
+\printbibliography[heading=bibintoc]
+
+\end{document}
