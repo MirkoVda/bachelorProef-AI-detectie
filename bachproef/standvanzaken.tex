@@ -1,51 +1,254 @@
 \chapter{\IfLanguageName{dutch}{Stand van zaken}{State of the art}}%
 \label{ch:stand-van-zaken}
 
-% Tip: Begin elk hoofdstuk met een paragraaf inleiding die beschrijft hoe
-% dit hoofdstuk past binnen het geheel van de bachelorproef. Geef in het
-% bijzonder aan wat de link is met het vorige en volgende hoofdstuk.
+Dit hoofdstuk bouwt verder op de probleemstelling uit de inleiding en onderbouwt de methodologische keuzes uit hoofdstuk~\ref{ch:methodologie}. De literatuurstudie brengt de huidige stand van zaken in kaart rond AI-gegenereerde en AI-gemanipuleerde beelden, met focus op detectie van stilstaande foto's in realistische omstandigheden. Daarbij worden zowel de evolutie van generatieve modellen, de belangrijkste detectiebenaderingen, beschikbare datasets, evaluatiemethoden als praktische beperkingen besproken. Het hoofdstuk sluit af met onderzoekshiaten die rechtstreeks de opzet van deze bachelorproef motiveren.
 
-% Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
+\section{Afbakening van het onderzoeksdomein}
+De term \emph{deepfake} verwees oorspronkelijk vooral naar gemanipuleerde video's, maar wordt in recente literatuur ook gebruikt voor synthetische of gemanipuleerde stilstaande beelden~\autocite{MultimodalSurvey2025,Pei2024}. In deze bachelorproef ligt de focus op beeldforensische detectie van twee hoofdklassen:
+\begin{itemize}
+  \item volledig AI-gegenereerde afbeeldingen (bv.~diffusion-output),
+  \item partieel AI-gemanipuleerde afbeeldingen (bv.~generative fill, inpainting, face replacement).
+\end{itemize}
 
-Dit hoofdstuk bevat je literatuurstudie. De inhoud gaat verder op de inleiding, maar zal het onderwerp van de bachelorproef *diepgaand* uitspitten. De bedoeling is dat de lezer na lezing van dit hoofdstuk helemaal op de hoogte is van de huidige stand van zaken (state-of-the-art) in het onderzoeksdomein. Iemand die niet vertrouwd is met het onderwerp, weet nu voldoende om de rest van het verhaal te kunnen volgen, zonder dat die er nog andere informatie moet over opzoeken \autocite{Pollefliet2011}.
+Deze afbakening is relevant omdat beide klassen in praktijk verschillende detectiesignalen vertonen. Volledig synthetische beelden laten vaker globale statistische afwijkingen zien, terwijl partiële manipulaties eerder lokale inconsistenties introduceren aan grenzen, texturen of semantische overgangszones~\autocite{WangDIRE2023,SIDA2025}. De keuze om op stilstaand beeld te focussen is verder verdedigbaar omdat veel operationele contexten (profielbeelden, nieuwsbeelden, e-commercefoto's, bewijsfoto's) geen videosequenties of audiokanalen bevatten, waardoor multimodale signalen niet beschikbaar zijn~\autocite{MultimodalSurvey2025}.
 
-Je verwijst bij elke bewering die je doet, vakterm die je introduceert, enz.\ naar je bronnen. In \LaTeX{} kan dat met het commando \texttt{$\backslash${textcite\{\}}} of \texttt{$\backslash${autocite\{\}}}. Als argument van het commando geef je de ``sleutel'' van een ``record'' in een bibliografische databank in het Bib\LaTeX{}-formaat (een tekstbestand). Als je expliciet naar de auteur verwijst in de zin (narratieve referentie), gebruik je \texttt{$\backslash${}textcite\{\}}. Soms is de auteursnaam niet expliciet een onderdeel van de zin, dan gebruik je \texttt{$\backslash${}autocite\{\}} (referentie tussen haakjes). Dit gebruik je bv.~bij een citaat, of om in het bijschrift van een overgenomen afbeelding, broncode, tabel, enz. te verwijzen naar de bron. In de volgende paragraaf een voorbeeld van elk.
+\section{Evolutie van generatieve beeldmodellen en implicaties voor detectie}
 
-\textcite{Knuth1998} schreef een van de standaardwerken over sorteer- en zoekalgoritmen. Experten zijn het erover eens dat cloud computing een interessante opportuniteit vormen, zowel voor gebruikers als voor dienstverleners op vlak van informatietechnologie~\autocite{Creeger2009}.
+\subsection{Van GAN-artefacten naar diffusion-realisme}
+Vroege deepfake-detectie was sterk afgestemd op artefacten van GAN-gebaseerde generatoren, zoals checkerboard-patronen, aliasing en kleurdiscrepanties. Naarmate generatieve modellen evolueerden, daalde de bruikbaarheid van deze vaste artefactsignaturen~\autocite{Pei2024}. Diffusion-modellen produceerden vervolgens een kwaliteitssprong door iteratieve denoising en sterkere tekst-naar-beeld conditionering, waardoor veel klassieke forensische cues minder uitgesproken werden~\autocite{TowardsDiffusion2024}.
 
-Let er ook op: het \texttt{cite}-commando voor de punt, dus binnen de zin. Je verwijst meteen naar een bron in de eerste zin die erop gebaseerd is, dus niet pas op het einde van een paragraaf.
+Deze evolutie verklaart waarom oudere detectors met hoge prestaties op historische benchmarks vaak degraderen op moderne datasets~\autocite{EvaluationModels2025}. Waar vroegere modellen konden vertrouwen op relatief stabiele generatiefouten, moeten recente detectors robuust zijn tegen subtielere en modelonafhankelijke patronen. Bovendien versnelt het release-tempo van generatieve tools, wat leidt tot een permanent \emph{moving target}-probleem voor supervised detectie~\autocite{Hasan2026}.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{grail.jpg}
-  \caption[Voorbeeld figuur.]{\label{fig:grail}Voorbeeld van invoegen van een figuur. Zorg altijd voor een uitgebreid bijschrift dat de figuur volledig beschrijft zonder in de tekst te moeten gaan zoeken. Vergeet ook je bronvermelding niet!}
-\end{figure}
+\subsection{Toegenomen toegankelijkheid en schaal}
+Naast technische vooruitgang stijgt ook de operationele impact door laagdrempelige tools (zoals Midjourney, DALL-E en vergelijkbare interfaces) die kwalitatieve beeldgeneratie toegankelijk maken voor niet-experten. Hierdoor stijgt het volume potentieel gemanipuleerd beeldmateriaal in publieke en private platformen~\autocite{Pei2024}. Voor detectie betekent dit dat modellen niet alleen accuraat moeten zijn in laboratoriumomgevingen, maar ook schaalbaar en stabiel in diverse productiestromen.
 
-\begin{listing}
-  \begin{minted}{python}
-    import pandas as pd
-    import seaborn as sns
+\subsection{Detectie als asymmetrische wedloop}
+De literatuur beschrijft deepfake-detectie vaak als een asymmetrische competitie: generatieve systemen optimaliseren expliciet op visuele plausibiliteit, terwijl detectors doorgaans reactief worden ontwikkeld op reeds bekende manipulatievormen~\autocite{Hasan2026}. Deze asymmetrie veroorzaakt drie structurele uitdagingen:
+\begin{enumerate}
+  \item \textbf{Generalisatiekloof:} hoge performantie op bekende datasets vertaalt zich beperkt naar nieuwe generatieve families.
+  \item \textbf{Domeinverschuiving:} distributieverschillen door compressie, resolutie en platformbewerking beïnvloeden voorspellingen.
+  \item \textbf{Onderhoudslast:} modellen vereisen frequente hertraining of adaptatie om actueel te blijven.
+\end{enumerate}
 
-    penguins = sns.load_dataset('penguins')
-    sns.relplot(data=penguins, x="flipper_length_mm", y="bill_length_mm", hue="species")
-  \end{minted}
-  \caption[Voorbeeld codefragment]{Voorbeeld van het invoegen van een codefragment.}
-\end{listing}
+Deze inzichten impliceren dat een relevante evaluatie niet kan stoppen bij \emph{in-distribution} accuracy, maar ook robuustheid en overdraagbaarheid moet meten~\autocite{EvaluationModels2025,OpenSet2025}.
 
-\lipsum[7-20]
+\section{Detectiebenaderingen in de literatuur}
 
-\begin{table}
-  \centering
-  \begin{tabular}{lcr}
-    \toprule
-    \textbf{Kolom 1} & \textbf{Kolom 2} & \textbf{Kolom 3} \\
-    $\alpha$         & $\beta$          & $\gamma$         \\
-    \midrule
-    A                & 10.230           & a                \\
-    B                & 45.678           & b                \\
-    C                & 99.987           & c                \\
-    \bottomrule
-  \end{tabular}
-  \caption[Voorbeeld tabel]{\label{tab:example}Voorbeeld van een tabel.}
-\end{table}
+\subsection{Klassieke beeldforensiek als basislaag}
+Voor de doorbraak van diepe neurale netwerken steunde beeldmanipulatiedetectie op handgemaakte forensische kenmerken, zoals camera-sensorruis (PRNU), JPEG-inconsistenties en CFA-analyse. Deze technieken blijven conceptueel belangrijk omdat ze verklaren welke fysische of statistische onregelmatigheden manipulatie kan achterlaten. Hun beperkingen zijn echter groot bij moderne AI-generatie, waar beelden vaak geen klassieke cameraketen meer volgen of waar postprocessing forensische cues verbergt~\autocite{Pei2024}.
+
+In recente pipelines worden sommige klassieke signalen nog als aanvullende features ingezet, maar zelden als autonome oplossing. De consensus in de literatuur is dat pure handgemaakte methoden onvoldoende schaalbaar zijn voor hedendaagse variabiliteit in gegenereerde content~\autocite{Raza2026}.
+
+\subsection{CNN-gebaseerde detectie}
+Convolutional Neural Networks domineren historisch de eerste generatie deepfake-detectors. Hun sterkte ligt in het modelleren van lokale patronen: textuurfouten, onrealistische randen en fine-grained frequentiestructuren~\autocite{Raza2026}. Vooral bij partiële manipulaties kunnen CNN's effectief zijn, omdat inconsistenties zich vaak lokaal manifesteren.
+
+Tegelijk rapporteren meerdere studies dat CNN's gevoelig zijn voor datasetbias en beperkte transfer naar ongeziene generatoren~\autocite{Pei2024,EvaluationModels2025}. Wanneer een model impliciet leert vertrouwen op bron-specifieke artefacten, ontstaat overfitting op manipulatietypes die in de trainingsdata domineren. Daarnaast verlaagt sterke compressie de betrouwbaarheid van subtiele textuurkenmerken, wat vooral bij platformbeelden problematisch is~\autocite{CompressionHybrid2025}.
+
+Desondanks blijven CNN's relevant omwille van hun relatief lage rekenkost, maturiteit in tooling en goede prestaties in resource-beperkte omgevingen. In operationele settings met strikte latency-eisen vormen ze vaak een sterke baseline.
+
+\subsection{Vision Transformers voor globale consistentie}
+Vision Transformers (ViT's) verwerken beelden als sequenties van patches met self-attention, waardoor ze lange-afstandsrelaties en globale consistentie explicieter modelleren dan klassieke convoluties. Voor deepfake-detectie is dat relevant bij semantische of structurele inconsistenties die niet louter plaatselijk zijn~\autocite{QuantumViT2025,CNNViTCompare2026}.
+
+Literatuur wijst op competitieve tot superieure prestaties van transformer-gebaseerde detectors in diverse benchmarks, vooral wanneer voldoende data en geschikte regularisatie beschikbaar zijn~\autocite{Raza2026}. Hun zwakkere punt blijft vaak datatraining op kleinere datasets en een hogere computationele kost. In praktijk vereist dit zorgvuldige balans tussen performantie en inzetbaarheid.
+
+\subsection{Hybride architecturen (CNN + Transformer)}
+Omdat CNN's en ViT's complementaire sterktes hebben, groeit de aandacht voor hybride modellen die lokale en globale representaties combineren. Dergelijke architecturen gebruiken vaak een convolutionele \emph{stem} voor lage-level features en een attentionmodule voor contextuele aggregatie~\autocite{CNNViTCompare2026,CompressionHybrid2025}. 
+
+De literatuur suggereert dat hybride benaderingen robuuster kunnen zijn onder variabele kwaliteit, omdat ze niet afhankelijk zijn van één type cue~\autocite{CompressionHybrid2025}. Dit maakt ze aantrekkelijk voor realistische scenario's waar beeldkwaliteit, manipulatievorm en bronmodel wisselen. Een aandachtspunt is wel verhoogde modelcomplexiteit, met implicaties voor trainingstijd, uitlegbaarheid en deployment.
+
+\subsection{Generatiespecifieke methoden voor diffusion-content}
+Naast algemene detectors ontstaan ook methoden die expliciet inspelen op diffusion-mechanismen. Een bekend voorbeeld is DIRE, dat reconstructiegedrag van diffusion-processen gebruikt om synthetische beelden te onderscheiden van echte~\autocite{WangDIRE2023}. Recente varianten, zoals \emph{snap-back reconstruction}, bouwen verder op gelijkaardige intuïties: als een beeld intern consistent is met diffusion-generatie, vertoont het specifieke reconstructiepatronen~\autocite{SnapBack2025}.
+
+Deze richting is veelbelovend voor performantie op diffusion-data, maar roept generalisatievragen op wanneer generatieve pipelines wijzigen of wanneer beelden sterk zijn nabewerkt. Daarom bepleit de literatuur doorgaans een combinatie van generatiespecifieke en modelagnostische signalen~\autocite{Pei2024,TowardsDiffusion2024}.
+
+\subsection{Open-set en generaliseerbare detectie}
+Een kernprobleem in het domein is detectie van onbekende manipulatietypes. Open-set benaderingen proberen het model minder afhankelijk te maken van gesloten klassegrenzen en meer te laten reageren op afwijking ten opzichte van authentieke distributies~\autocite{OpenSet2025}. 
+
+Parallel onderzoeken verschillende auteurs foundation features zoals CLIP-representaties, die dankzij grootschalige pretraining mogelijk beter transfereren over domeinen~\autocite{CLIPDeepfake2025}. Hoewel resultaten bemoedigend zijn, blijven ook hier robuustheidsvragen bestaan bij zware compressie, platformspecifieke postprocessing en adversariële aanpassingen.
+
+\section{Datasets: fundament en bottleneck}
+
+\subsection{Historische rol van FaceForensics++}
+FaceForensics++ blijft een referentiebenchmark in veel studies en heeft het veld aanzienlijk vooruitgeholpen door gestandaardiseerde evaluatie mogelijk te maken~\autocite{Rossler2019}. Het zwakke punt is echter dat de dataset vooral oudere manipulatieprocedures omvat, waardoor performantie op deze benchmark geen garantie biedt voor actuele inzetbaarheid.
+
+De literatuur waarschuwt daarom voor \emph{benchmark overfitting}: modellen optimaliseren op de eigenaardigheden van enkele dominante datasets in plaats van op onderliggende manipulatieprincipes~\autocite{Pei2024,EvaluationModels2025}. Dit probleem is bijzonder relevant voor bachelorproeven en toegepaste projecten, waar een te beperkte dataset snel tot overschatte conclusies kan leiden.
+
+\subsection{Opkomst van recentere en meer diverse datasets}
+Recente datasetinitiatieven proberen meer variatie te introduceren in bronmodellen, manipulatietypes en kwaliteitsniveaus. Voor beeldgerichte deepfake-detectie worden onder andere datasetgedreven benaderingen en nieuwe verzamelingen zoals DeepDetect-2025 genoemd~\autocite{HybridDataset2025,DeepDetectDataset2025}. Het belang van dergelijke bronnen ligt in het verminderen van generatie- en platformbias.
+
+Tegelijk blijft kwaliteitscontrole een uitdaging: niet elke publiek beschikbare dataset documenteert creatieproces, labelkwaliteit of licentievoorwaarden voldoende. Zonder transparante herkomst kunnen modellen onbedoeld irrelevante correlaties leren (bv.~watermerken, resolutieprofielen, stijlkenmerken van één generator) in plaats van manipulatiesignalen.
+
+\subsection{Databias en representativiteit}
+Vier vormen van bias komen frequent terug in literatuur:
+\begin{itemize}
+  \item \textbf{Generatormodel-bias:} oververtegenwoordiging van één generatiepipeline.
+  \item \textbf{Kwaliteitsbias:} verschil in compressie of resolutie tussen echte en valse klasse.
+  \item \textbf{Semantische bias:} verschillende onderwerpverdeling (bv.~gezichten vs.~landschappen) per klasse.
+  \item \textbf{Platformbias:} artificiële verschillen door datacollectiebron.
+\end{itemize}
+
+Deze biases kunnen modelprestaties sterk vertekenen, waardoor hoge validatiescores niet noodzakelijk betekenen dat het model effectief manipulatie detecteert~\autocite{EvaluationModels2025}. Daardoor is een strikte datastrategie met expliciete metadata, gebalanceerde splits en out-of-domain tests essentieel.
+
+\section{Evaluatiemethoden en prestatie-indicatoren}
+
+\subsection{Kernmetrieken}
+In deepfake-detectie rapporteren studies typisch accuracy, precision, recall, F1-score en soms AUC. Deze metrieken blijven noodzakelijk, maar hun interpretatie hangt sterk af van klassedistributie en operationele kost van fouten~\autocite{Raza2026,EvaluationModels2025}. 
+
+In toepassingen zoals moderatie of verificatie is een \emph{false positive} (echt beeld foutief als fake) vaak reputatiegevoelig, terwijl een \emph{false negative} (fake niet gedetecteerd) veiligheids- of frauderisico veroorzaakt. Daarom volstaat één globale score zelden; praktijkgerichte evaluatie vereist metriekprofielen per drempel en context.
+
+\subsection{In-distribution versus out-of-distribution testing}
+Een cruciale trend is het onderscheid tussen prestaties op bekende datadistributies en prestaties op ongeziene combinaties van generator, onderwerp en kwaliteit. Veel modellen presteren sterk op \emph{in-distribution} testsets maar verliezen significant bij \emph{cross-dataset} validatie~\autocite{Pei2024,OpenSet2025}. 
+
+Voor onderzoek met hoge externe validiteit is het daarom aangewezen om minstens één evaluatieset te gebruiken die niet rechtstreeks uit dezelfde data- of generatiepipeline komt als de training. Deze praktijk voorkomt te optimistische conclusies.
+
+\subsection{Kalibratie en betrouwbaarheid van beslissingen}
+Naast classificatieprestaties groeit aandacht voor \emph{calibration}: in welke mate stemt de voorspelde kans overeen met werkelijke betrouwbaarheid. Slecht gekalibreerde modellen kunnen oververzekerde foutieve beslissingen produceren, wat operationeel risicovol is. Hoewel dit thema minder frequent gerapporteerd wordt dan accuracy, benadrukken recente evaluatiestudies de nood aan betrouwbaarheidsschatting bij deployment~\autocite{EvaluationModels2025}.
+
+\section{Robuustheid in realistische omgevingen}
+
+\subsection{Impact van compressie, schaling en filtering}
+Operationele beeldstromen worden bijna altijd gewijzigd door platformverwerking: JPEG-recompressie, resizing, denoising of contrastaanpassingen. Dergelijke transformaties kunnen detectiesignalen verzwakken of vervormen~\autocite{CompressionHybrid2025,EvaluationModels2025}. In meerdere studies daalt performantie systematisch naarmate compressie toeneemt.
+
+Voor dit onderzoeksdomein is robuustheid daarom geen bijkomstig criterium maar een kernvereiste. Een model dat alleen op hoge-resolutie laboratoriumdata werkt, mist praktische waarde in sociale media- of platformcontext.
+
+\subsection{Generalisatie over platforms en workflows}
+Robuustheid omvat meer dan technische transformaties. Ook verschillen in gebruikersgedrag, captureketens en workflowstappen beïnvloeden modelgedrag. Beelden kunnen bijvoorbeeld screenshots zijn van reeds bewerkte content, of meerdere bewerkingsrondes doorlopen hebben. Literatuur benadrukt dat dergelijke ketens cumulatieve domeinverschuiving creëren die klassieke benchmarktests onderschatten~\autocite{Pei2024,Hasan2026}.
+
+\subsection{Adversariële en adaptieve manipulaties}
+Naarmate detectors breder worden toegepast, stijgt ook het risico op adaptieve tegenmaatregelen waarbij aanvallers doelgericht transformaties kiezen om detectie te omzeilen. Hoewel dit niet in elke studie experimenteel wordt uitgewerkt, geldt het als reëel strategisch risico in het veld~\autocite{Hasan2026}. Robuuste systemen combineren daarom idealiter:
+\begin{itemize}
+  \item data-augmentatie met realistische degradaties,
+  \item modelensembles of multi-cue benaderingen,
+  \item continue monitoring en periodieke hertraining.
+\end{itemize}
+
+\section{Uitlegbaarheid en interpreteerbaarheid}
+
+\subsection{Waarom uitlegbaarheid relevant is}
+In gevoelige toepassingen is een binaire voorspelling onvoldoende. Gebruikers willen begrijpen \emph{waarom} een beeld als gemanipuleerd wordt geclassificeerd. Dit is essentieel voor vertrouwen, auditbaarheid en menselijke verificatie~\autocite{SIDA2025}. Zonder interpreteerbare feedback is acceptatie in professionele processen beperkt.
+
+\subsection{Technieken en beperkingen}
+Gangbare technieken zijn attention visualisaties, saliency maps en activatie-gebaseerde heatmaps. Ze kunnen indicatief tonen welke regio's bijdragen aan een beslissing, maar blijven gevoelig voor methodologische valkuilen (instabiliteit tussen runs, oversimplificatie van causale mechanismen)~\autocite{SIDA2025}. De literatuur adviseert daarom om visualisaties te gebruiken als ondersteunend diagnostisch instrument, niet als sluitend bewijs.
+
+\section{Multimodale tendensen en relevantie voor beeld-only detectie}
+Een deel van het recente onderzoek verschuift richting multimodale detectie (beeld, audio, tekst, metadata), omdat gecombineerde signalen detectiekracht kunnen verhogen~\autocite{MultimodalSurvey2025,CAST2025}. Voor veel praktijkscenario's met enkel stilstaand beeld blijft echter een \emph{image-only} aanpak noodzakelijk.
+
+De implicatie voor dit onderzoek is tweevoudig. Enerzijds kan toekomstige uitbreiding naar multimodale pipelines interessant zijn. Anderzijds moet de huidige modelselectie realistisch blijven voor contexten waar enkel een afbeelding beschikbaar is. Dit versterkt de keuze om CNN-, ViT- en hybride beeldmodellen systematisch te vergelijken.
+
+\section{Trainingsstrategieën die in literatuur generalisatie verbeteren}
+
+\subsection{Data-augmentatie als eerste verdedigingslaag}
+Een terugkerende aanbeveling in recente studies is om tijdens training bewust kwaliteitsdegradaties te simuleren. Door beelden reeds in de trainingsfase te onderwerpen aan JPEG-compressie, resizing, blur en lichte kleurveranderingen, leren modellen robuustere representaties die minder afhankelijk zijn van fragiele pixelcues~\autocite{CompressionHybrid2025,EvaluationModels2025}. 
+
+Deze aanpak is geen detail, maar een strategische keuze. Veel detectoren falen immers niet omdat ze het manipulatieconcept niet begrijpen, maar omdat ze een te smalle visuele distributie hebben geleerd. Augmentatie verbreedt die distributie en reduceert de kans dat een model uitvalt zodra een platform een extra compressiestap toepast. Wel waarschuwt de literatuur dat augmentatie met irreële transformaties ook contraproductief kan zijn: het model leert dan invarianten die in operationele context weinig voorkomen. De effectiviteit hangt dus af van realistische parameterranges en systematische validatie.
+
+\subsection{Transfer learning en foundation-representaties}
+Door beperkte of onevenwichtige detectiedatasets gebruiken veel onderzoekers transfer learning als basisstrategie. Een model start dan van representaties die op grootschalige beelddata geleerd zijn, waarna fine-tuning gebeurt op deepfake-specifieke voorbeelden~\autocite{Raza2026}. Dit verkort trainingstijd en verhoogt doorgaans stabiliteit, vooral wanneer het aantal gelabelde manipulatievoorbeelden beperkt is.
+
+In recente literatuur groeit daarnaast interesse in foundation-features, bijvoorbeeld CLIP-gebaseerde representaties, om de generalisatie over ongeziene content te versterken~\autocite{CLIPDeepfake2025}. Het onderliggende argument is dat breed voorgetrainde representaties semantisch rijker zijn en minder snel vastlopen op één datasetstijl. Toch blijft voorzichtigheid nodig: foundation-modellen lossen datasetbias niet automatisch op en kunnen zelf nieuwe biases introduceren wanneer bepaalde beeldstijlen onder- of oververtegenwoordigd zijn.
+
+\subsection{Curriculum, hard negatives en foutgestuurde iteratie}
+Meerdere onderzoekslijnen suggereren dat een gefaseerde trainingsstrategie kan helpen: eerst leren op relatief duidelijke voorbeelden, daarna progressief moeilijkere gevallen toevoegen. In deepfake-detectie vertaalt dit zich naar het opnemen van \emph{hard negatives}: authentieke beelden die visueel dicht bij manipulatiewaarnemingen liggen, en omgekeerd moeilijk detecteerbare manipulaties~\autocite{OpenSet2025,EvaluationModels2025}. 
+
+Een foutgestuurde iteratie sluit daar op aan. Modellen worden periodiek geëvalueerd op foutclusters (bv.~specifieke compressiegraden, bepaalde beeldcategorieën, of specifieke generators), waarna de trainingsset gericht wordt aangevuld. De literatuur beschouwt dit als een pragmatische manier om domeinverschuiving stapsgewijs op te vangen zonder het volledige systeem telkens vanaf nul te hertrainen.
+
+\subsection{Open-set denken in trainingsopzet}
+Klassieke supervisie vertrekt vaak vanuit een gesloten wereldbeeld: het model leert ``echt'' versus ``fake'' op basis van bekende klassen. Open-set onderzoek toont echter dat dit in praktijk te beperkend is, omdat nieuwe manipulatietypes per definitie buiten de trainingsdistributie vallen~\autocite{OpenSet2025}. Daarom verschuiven sommige benaderingen naar beslissingsstrategieën die onzekerheid explicieter modelleren, bijvoorbeeld via afwijkingsscores of conservatievere drempelpolitiek.
+
+Voor praktijkgebruik is dit belangrijk: een detector hoeft niet altijd met absolute zekerheid te beslissen, maar moet ook kunnen aangeven wanneer een voorbeeld buiten zijn betrouwbare competentie valt. Zo'n mechanisme verkleint het risico op overzekere foute classificaties en ondersteunt menselijke escalatie in kritische workflows.
+
+\section{Van onderzoeksresultaat naar operationele inzet}
+
+\subsection{Prestatie alleen is geen deploybaarheid}
+Literatuur met hoge benchmarkscores focust vaak op \emph{wat} een model kan, maar minder op \emph{hoe} het in een echte workflow functioneert~\autocite{Raza2026,EvaluationModels2025}. Voor organisaties zijn extra criteria minstens even belangrijk:
+\begin{itemize}
+  \item inferentie-latency per afbeelding,
+  \item schaalbaarheid bij piekbelasting,
+  \item reproduceerbaarheid van resultaten,
+  \item uitlegbaarheid van beslissingen,
+  \item beheerbaarheid van modelupdates.
+\end{itemize}
+
+Een model met marginaal hogere accuracy maar hoge inferentiekost kan operationeel minder waardevol zijn dan een iets eenvoudiger alternatief dat stabiel en snel werkt. Dit spanningsveld tussen maximale prestatie en praktische inzetbaarheid komt frequent terug in toegepaste deepfake-detectie.
+
+\subsection{Drempelkeuze en risicoprofielen}
+In een productiesysteem is de classificatiedrempel geen louter technisch detail maar een beleidskeuze. Een lage drempel verhoogt de detectiekans maar ook het aantal false positives; een hoge drempel doet het omgekeerde. De optimale instelling hangt af van het risicoprofiel van de organisatie~\autocite{EvaluationModels2025}. 
+
+Voor een nieuwsredactie kan een foutief geweigerd beeld operationeel lastig zijn, maar een gemiste manipulatie reputatieschade veroorzaken. Voor een datingplatform kunnen zowel false negatives (identiteitsfraude) als false positives (onterechte blokkering) hoge kosten hebben. Literatuur adviseert daarom om drempels contextafhankelijk te kalibreren en periodiek te herzien op basis van actuele datastromen.
+
+\subsection{Mens-in-de-lus en escalatiestrategieën}
+Volledig geautomatiseerde beslissingen zijn in gevoelige contexten niet altijd wenselijk. Verschillende studies suggereren een \emph{human-in-the-loop} opzet waarbij het model vooral dient als selectiemechanisme: duidelijke gevallen worden automatisch verwerkt, twijfelgevallen gaan naar manuele review~\autocite{SIDA2025,MultimodalSurvey2025}. 
+
+Deze hybride aanpak levert twee voordelen op. Ten eerste daalt operationele druk omdat menselijke reviewers zich op risicodossiers kunnen concentreren. Ten tweede creëert het een feedbackkanaal: manueel geverifieerde voorbeelden kunnen terugvloeien naar toekomstige modelverbetering. Voor bachelorproefcontext is dit relevant omdat een proof-of-concept met duidelijke onzekerheidscommunicatie vaak meer praktische waarde heeft dan een ``black-box'' score zonder handelingsadvies.
+
+\subsection{Monitoring en modelveroudering}
+Deepfake-detectie is geen eenmalige implementatie maar een continu beheerproces. Door snelle evolutie van generatieve modellen kan detectieperformantie over tijd dalen, zelfs wanneer de initiële evaluatie sterk was~\autocite{Hasan2026,Pei2024}. Daarom benadrukt literatuur het belang van monitoringsindicatoren zoals:
+\begin{itemize}
+  \item drift in inputdistributie,
+  \item veranderingen in foutpatronen,
+  \item degradatie van kalibratie,
+  \item stijging van manueel gecorrigeerde beslissingen.
+\end{itemize}
+
+Een volwassen detectieoplossing bevat idealiter ook een updateprotocol: wanneer opnieuw labelen, wanneer hertrainen, en hoe nieuwe modelversies veilig in productie gebracht worden. Deze operationele laag ontbreekt vaak in puur academische benchmarks, maar is cruciaal voor duurzame inzet.
+
+\section{Ethische, maatschappelijke en governance-aspecten}
+
+\subsection{Dubbel gebruik en verantwoord onderzoek}
+Deepfake-detectie is een klassiek voorbeeld van \emph{dual-use} technologie. Enerzijds beschermt detectie tegen misleiding, fraude en reputatieschade. Anderzijds kunnen inzichten uit detectieonderzoek indirect ook generatieve systemen verbeteren doordat zwaktes sneller zichtbaar worden~\autocite{Hasan2026}. Verantwoord onderzoek vraagt daarom transparantie over doel, beperkingen en toepassingscontext.
+
+Voor een bachelorproef betekent dit dat resultaten best doordacht gerapporteerd worden: geen claims van ``perfecte detectie'', wel heldere afbakening van data, condities en foutmarges. Deze wetenschappelijke bescheidenheid is geen zwakte, maar versterkt de betrouwbaarheid en bruikbaarheid van de conclusies.
+
+\subsection{Bias, fairness en impact op gebruikers}
+Wanneer trainingsdata scheef verdeeld zijn over beeldtypes, demografie of opnamecontext, kunnen foutpercentages ongelijk verdeeld raken. In operationele systemen kan dat leiden tot disproportionele impact op bepaalde gebruikersgroepen. Hoewel niet elke studie fairness expliciet kwantificeert, wordt datasetbias structureel erkend als risico~\autocite{Pei2024,EvaluationModels2025}. 
+
+Een verantwoord detectiekader omvat daarom minstens:
+\begin{itemize}
+  \item transparante documentatie van datakeuzes,
+  \item evaluatie op diverse subgroepen en kwaliteitsniveaus,
+  \item rapportering van fouttypes in plaats van enkel globale accuracy,
+  \item mogelijkheid tot menselijke herbeoordeling.
+\end{itemize}
+
+Deze principes zijn relevant voor doelgroepen zoals onderwijsinstellingen, redacties en platformbeheerders, waar beslissingen op basis van detectie een directe invloed hebben op personen of contentpublicatie.
+
+\subsection{Vertrouwen, auditbaarheid en uitlegbaarheid}
+Governance rond AI-systemen vereist dat beslissingen achteraf kunnen worden gereconstrueerd en verantwoord. Uitlegtechnieken zoals heatmaps dragen daartoe bij, maar moeten gepaard gaan met logging van modelversie, drempelinstelling en gebruikte preprocessing~\autocite{SIDA2025}. Zonder dergelijke auditsporen is het moeilijk om discussies over foutieve classificatie objectief op te lossen.
+
+In de literatuur groeit daarom aandacht voor \emph{decision traceability}: niet enkel de voorspelling bewaren, maar ook de context van die voorspelling. Voor toegepaste detectie verhoogt dit zowel intern vertrouwen (bij operators) als extern vertrouwen (bij gebruikers of stakeholders).
+
+\subsection{Positionering van de bachelorproef binnen verantwoord gebruik}
+Binnen dit onderzoek vertaalt verantwoord gebruik zich naar een proportionele ambitie: een proof-of-concept die technologische mogelijkheden aantoont, maar ook expliciet beperkingen communiceert. Die keuze sluit aan bij recente aanbevelingen uit survey- en evaluatiewerk die waarschuwen voor overselling van detectietechnologie~\autocite{MultimodalSurvey2025,EvaluationModels2025}. 
+
+Een wetenschappelijk correcte positionering luidt daarom niet dat AI-manipulaties definitief ``opgelost'' zijn, maar dat een goed ontworpen detectiepipeline het risico op misleiding aantoonbaar kan reduceren wanneer ze gecombineerd wordt met robuuste data, periodieke updates en menselijke controle.
+
+\section{Methodologische implicaties voor dit onderzoek}
+Uit de literatuur volgen vijf ontwerpprincipes die direct richting geven aan de proefondervindelijke fasen van deze bachelorproef:
+\begin{enumerate}
+  \item \textbf{Datasetdiversiteit is cruciaal.} Training op slechts één historische benchmark is onvoldoende voor actuele generalisatie~\autocite{Pei2024,EvaluationModels2025}.
+  \item \textbf{Architectuurvergelijking moet complementaire sterktes meenemen.} CNN's, ViT's en hybrides vangen verschillende signalen~\autocite{Raza2026,CNNViTCompare2026}.
+  \item \textbf{Robuustheidstests zijn noodzakelijk.} Compressie en resolutie-effecten moeten expliciet in de evaluatie worden opgenomen~\autocite{CompressionHybrid2025}.
+  \item \textbf{Out-of-domain validatie verhoogt externe validiteit.} Prestatie op ongeziene data is doorslaggevender dan benchmarkoptimalisatie~\autocite{OpenSet2025,EvaluationModels2025}.
+  \item \textbf{Uitlegbaarheid ondersteunt adoptie.} Visualisaties helpen resultaten interpreteerbaar maken voor niet-ML stakeholders~\autocite{SIDA2025}.
+\end{enumerate}
+
+Deze principes sluiten aan bij een iteratieve onderzoeksstrategie waarin dataselectie, modeltraining en robuustheidsanalyse elkaar versterken. Ze verklaren ook waarom de bachelorproef niet uitsluitend mikt op maximale accuracy, maar op een evenwicht tussen performantie, generalisatie en praktische toepasbaarheid.
+
+\section{Onderzoekshiaten en positionering van de bachelorproef}
+
+\subsection{Hiaat 1: Beperkte generalisatie naar nieuwe generatiemodellen}
+Ondanks sterke benchmarkresultaten blijft transfer naar onbekende of recente generatietechnieken een centraal probleem~\autocite{Hasan2026,Pei2024}. Veel modellen leren impliciet sporen van de trainingsbron in plaats van robuuste manipulatiekenmerken. Deze bachelorproef adresseert dat hiaat via datasetdiversiteit en een vergelijkende evaluatie over meerdere modeltypes.
+
+\subsection{Hiaat 2: Onvoldoende aandacht voor realistische degradatie}
+Veel papers rapporteren prestaties op relatief zuivere data, terwijl operationele beelden vaak gecomprimeerd, verkleind of gefilterd zijn. Hierdoor ontstaat een kloof tussen academische en praktische performantie~\autocite{CompressionHybrid2025,EvaluationModels2025}. Dit onderzoek maakt robuustheidsmeting expliciet onderdeel van de kernmethodologie.
+
+\subsection{Hiaat 3: Beperkte uitwerking naar inzetbare workflows}
+Niet elke academische detector is bruikbaar in werkprocessen. Aspecten zoals inference-tijd, interpretatie van output en integratie in bestaande workflows worden vaak onderbelicht~\autocite{Raza2026,SIDA2025}. Door een proof-of-concept te ontwikkelen met begrijpelijke output wordt in deze bachelorproef een eerste stap gezet naar operationele toepasbaarheid.
+
+\section{Synthese en conclusie}
+De huidige stand van zaken toont een snel evoluerend en competitief onderzoeksveld. De verschuiving van klassieke manipulatie naar geavanceerde diffusion-generatie heeft de detectietaak fundamenteel moeilijker gemaakt~\autocite{TowardsDiffusion2024,Hasan2026}. CNN's blijven sterk in lokale artefactdetectie, ViT's bieden voordelen voor globale consistentie, en hybride modellen lijken in veel gevallen de meest evenwichtige keuze~\autocite{CNNViTCompare2026,CompressionHybrid2025}. 
+
+Tegelijk bevestigt de literatuur dat datasetkwaliteit en evaluatieprotocol minstens even bepalend zijn als modelarchitectuur. Zonder diverse data en realistische robuustheidstests dreigt overschatting van prestaties~\autocite{Pei2024,EvaluationModels2025}. Daarom is een methodologie die expliciet inzet op dataspreiding, modelvergelijking, degradatietests en interpreteerbaarheid goed verantwoord.
+
+Deze literatuurstudie legitimeert zo de onderzoeksopzet van de bachelorproef: een empirische vergelijking van CNN-, ViT- en hybride modellen op een representatieve dataset, aangevuld met robuustheidsanalyse onder realistische beeldvervorming en een proof-of-concept gericht op praktische inzet. In het volgende hoofdstuk wordt deze opzet methodologisch uitgewerkt en vertaald naar experimentele uitvoering.
 

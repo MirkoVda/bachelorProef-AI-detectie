@@ -2,7 +2,8 @@
 %% Samenvatting
 %%=============================================================================
 
-% TODO: De "abstract" of samenvatting is een kernachtige (~ 1 blz. voor een
+
+
 % thesis) synthese van het document.
 %
 % Een goede abstract biedt een kernachtig antwoord op volgende vragen:
@@ -27,17 +28,17 @@
 
 %%---------- Nederlandse samenvatting -----------------------------------------
 %
-% TODO: Als je je bachelorproef in het Engels schrijft, moet je eerst een
+
 % Nederlandse samenvatting invoegen. Haal daarvoor onderstaande code uit
 % commentaar.
 % Wie zijn bachelorproef in het Nederlands schrijft, kan dit negeren, de inhoud
 % wordt niet in het document ingevoegd.
 
 \IfLanguageName{english}{%
-\selectlanguage{dutch}
-\chapter*{Samenvatting}
-\lipsum[1-4]
-\selectlanguage{english}
+    \selectlanguage{dutch}
+    \chapter*{Samenvatting}
+    \lipsum[1-4]
+    \selectlanguage{english}
 }{}
 
 %%---------- Samenvatting -----------------------------------------------------
@@ -45,4 +46,4 @@
 
 \chapter*{\IfLanguageName{dutch}{Samenvatting}{Abstract}}
 
-\lipsum[1-4]
+De recente opkomst van geavanceerde generatieve AI-modellen zoals Midjourney, Adobe Firefly, DALL-E en Photoshop’s ‘Generative Fill’ maakt het mogelijk om uiterst realistische, maar volledig kunstmatig gegenereerde of gemanipuleerde profielfoto's te creëren. Deze evolutie vormt een toenemende uitdaging voor organisaties die moeten kunnen vertrouwen op de authenticiteit van visuele informatie, zoals bij datingsites en sociale media. Traditionele forensische technieken blijken steeds minder effectief tegen moderne AI-systemen, wat de noodzaak benadrukt voor robuuste, data-gedreven detectiemethoden. Dit onderzoek heeft als doel te bepalen hoe artificiële intelligentie op een betrouwbare manier onderscheid kan maken tussen authentieke beelden en AI-gegenereerde of AI-gemanipuleerde profielfoto's, en welke modelarchitecturen hiervoor de hoogste nauwkeurigheid opleveren. Hiertoe worden verschillende deep learning-benaderingen onderzocht, waaronder Convolutional Neural Networks, Vision Transformers en hybride modellen. De modellen worden getraind en geëvalueerd op zowel bestaande datasets, zoals FaceForensics++, als op zelf gegenereerde manipulaties afkomstig van diverse generatieve AI-tools. Daarnaast wordt onderzocht in welke mate de detectieprestaties beïnvloed worden door bijvoorbeeld compressie, zodat de resultaten aansluiten bij reële situaties zoals de beeldverwerking die plaatsvindt op sociale media en datingplatformen. Verwacht wordt dat Vision Transformers beter presteren bij het identificeren van subtiele artefacten, terwijl CNN-gebaseerde modellen robuuster blijven onder sterke compressie. De bevindingen van deze studie kunnen bijdragen aan de ontwikkeling van een praktische, gebruiksvriendelijke tool die automatisch AI-manipulaties detecteert en markeert. Dit biedt waarde voor organisaties binnen sectoren zoals datingsites, nieuwsredacties, sociale mediaplatformen en fotowedstrijden, omdat zij grote hoeveelheden beelden verwerken en baat hebben bij een betrouwbare verificatie om misleiding en identiteitsfraude te voorkomen.

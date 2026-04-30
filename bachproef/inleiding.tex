@@ -5,46 +5,60 @@
 \chapter{\IfLanguageName{dutch}{Inleiding}{Introduction}}%
 \label{ch:inleiding}
 
-De inleiding moet de lezer net genoeg informatie verschaffen om het onderwerp te begrijpen en in te zien waarom de onderzoeksvraag de moeite waard is om te onderzoeken. In de inleiding ga je literatuurverwijzingen beperken, zodat de tekst vlot leesbaar blijft. Je kan de inleiding verder onderverdelen in secties als dit de tekst verduidelijkt. Zaken die aan bod kunnen komen in de inleiding~\autocite{Pollefliet2011}:
-
-\begin{itemize}
-  \item context, achtergrond
-  \item afbakenen van het onderwerp
-  \item verantwoording van het onderwerp, methodologie
-  \item probleemstelling
-  \item onderzoeksdoelstelling
-  \item onderzoeksvraag
-  \item \ldots
-\end{itemize}
+De recente opkomst van geavanceerde generatieve AI-modellen, zoals Midjourney, Adobe Firefly en DALL-E, wordt beschouwd als een van de grootste technologische verschuivingen binnen digitale media. Het is tegenwoordig mogelijk om uiterst realistische, maar volledig kunstmatig gegenereerde of gemanipuleerde afbeeldingen te creëren. Hoewel deze technologieën nieuwe creatieve mogelijkheden bieden, zorgen ze tegelijkertijd voor een vergrotend risico op digitale misleiding en identiteitsfraude. Dit creëert een unieke uitdaging voor organisaties: hoe kan de authenticiteit van visuele informatie gegarandeerd worden in een tijdperk waar menselijke beoordeling steeds vaker tekortschiet? Dit onderzoek richt zich op de toepasbaarheid van machine learning (ML) voor het detecteren van deze manipulaties, door traditionele benaderingen te vergelijken met modernere architecturen in realistische scenario's.
 
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
 
-Uit je probleemstelling moet duidelijk zijn dat je onderzoek een meerwaarde heeft voor een concrete doelgroep. De doelgroep moet goed gedefinieerd en afgelijnd zijn. Doelgroepen als ``bedrijven,'' ``KMO's'', systeembeheerders, enz.~zijn nog te vaag. Als je een lijstje kan maken van de personen/organisaties die een meerwaarde zullen vinden in deze bachelorproef (dit is eigenlijk je steekproefkader), dan is dat een indicatie dat de doelgroep goed gedefinieerd is. Dit kan een enkel bedrijf zijn of zelfs één persoon (je co-promotor/opdrachtgever).
+De huidige (traditionele) methoden om beeldmanipulatie te detecteren leunen vaak op technische metadata of de detectie van zichtbare, handmatige aanpassingen. Tegenover moderne generatieve AI-systemen blijken deze technieken echter steeds minder effectief. Daarnaast presteren detectiemodellen die in gecontroleerde omgevingen getraind zijn vaak suboptimaal wanneer beelden in de praktijk worden gecomprimeerd of geschaald, zoals op sociale media gebeurt. 
+
+De doelgroep van dit onderzoek bestaat primair uit IT-professionals en organisaties die grote hoeveelheden beeldmateriaal verwerken en behoefte hebben aan geautomatiseerde, datagedreven controle. Dit omvat specifiek:
+\begin{itemize}
+    \item Beheerders van datingsites en sociale mediaplatformen die identiteitsfraude willen tegengaan.
+    \item Nieuwsredacties die de echtheid van ingezonden beeldmateriaal moeten garanderen.
+    \item Onderwijsinstellingen en fotowedstrijden die ongeoorloofd AI-gebruik willen herkennen.
+\end{itemize}
+Zij hebben nood aan inzicht in welke detectiemethoden en modellen in de praktijk écht betrouwbaar blijven.
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
 
-Wees zo concreet mogelijk bij het formuleren van je onderzoeksvraag. Een onderzoeksvraag is trouwens iets waar nog niemand op dit moment een antwoord heeft (voor zover je kan nagaan). Het opzoeken van bestaande informatie (bv. ``welke tools bestaan er voor deze toepassing?'') is dus geen onderzoeksvraag. Je kan de onderzoeksvraag verder specifiëren in deelvragen. Bv.~als je onderzoek gaat over performantiemetingen, dan 
+Het doel van deze bachelorproef is tweeledig: ten eerste het vergelijken van verschillende modelarchitecturen voor deepfake-detectie, en ten tweede het analyseren van de invloed van realistische beeldbewerkingen op hun prestaties. De hoofdonderzoeksvraag luidt als volgt:
+
+\begin{quote}
+    \textit{Op welke manier kan artificiële intelligentie betrouwbaar onderscheid maken tussen authentieke en AI-gemanipuleerde beelden, en welke methoden of modellen leveren hierbij de hoogste nauwkeurigheid op?}
+\end{quote}
+
+Om deze vraag te beantwoorden, worden de volgende deelvragen gehanteerd:
+\begin{enumerate}
+    \item In hoeverre presteren Vision Transformers (ViT) of hybride modellen beter dan uitsluitend op convoluties gebaseerde modellen (CNN's) bij het identificeren van moderne AI-generaties?
+    \item Welke specifieke visuele patronen of kenmerken (zoals lokale artefacten of globale inconsistenties) leren deze modellen herkennen?
+    \item Wat is de invloed van realistische beeldbewerkingen, zoals compressie en schaling, op de nauwkeurigheid en robuustheid van de getrainde modellen?
+\end{enumerate}
 
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Wat is het beoogde resultaat van je bachelorproef? Wat zijn de criteria voor succes? Beschrijf die zo concreet mogelijk. Gaat het bv.\ om een proof-of-concept, een prototype, een verslag met aanbevelingen, een vergelijkende studie, enz.
+Het beoogde resultaat van deze bachelorproef is een vergelijkende studie, afgesloten met een proof-of-concept. De criteria voor succes zijn:
+\begin{itemize}
+    \item Het samenstellen van een representatieve dataset met authentieke foto's en AI-gegenereerde beelden afkomstig van diverse moderne tools (zoals Midjourney en DALL-E).
+    \item Het trainen en evalueren van drie specifieke modelarchitecturen: een CNN, een Vision Transformer en een hybride model.
+    \item Een kwantitatieve robuustheidsanalyse waarbij de testset onderworpen wordt aan compressie en resolutieverkleining om praktijksituaties te simuleren.
+    \item De ontwikkeling van een experimenteel proof-of-concept dat demonstreert hoe de detectie in een praktische omgeving toegepast en gevisualiseerd kan worden.
+    \item Een set concrete aanbevelingen voor de doelgroep omtrent de implementatie en de beperkingen van AI-detectie.
+\end{itemize}
 
 \section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
 
-% Het is gebruikelijk aan het einde van de inleiding een overzicht te
-% geven van de opbouw van de rest van de tekst. Deze sectie bevat al een aanzet
-% die je kan aanvullen/aanpassen in functie van je eigen tekst.
-
 De rest van deze bachelorproef is als volgt opgebouwd:
 
-In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
+In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein op basis van een literatuurstudie. Hierbij wordt ingegaan op generatieve AI, de evolutie van deepfakes en de theorie achter CNN's en Vision Transformers.
 
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
+In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht. Dit omvat de definitie van de detectiescope, de opbouw van de dataset en de opzet van de experimenten en robuustheidsanalyses.
 
-% TODO: Vul hier aan voor je eigen hoofstukken, één of twee zinnen per hoofdstuk
+In Hoofdstuk~\ref{ch:experimenten-en-resultaten} worden de experimentele resultaten gepresenteerd. De geselecteerde modellen worden met elkaar vergeleken, gevolgd door de analyse van hun prestaties onder invloed van compressie en schaling.
 
-In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
+In Hoofdstuk~\ref{ch:proof-of-concept} wordt de praktische toepasbaarheid geïllustreerd aan de hand van een proof-of-concept demonstratie van het best presterende model.
+
+In Hoofdstuk~\ref{ch:conclusie}, ten slotte, wordt de algemene conclusie gegeven en een finaal antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
