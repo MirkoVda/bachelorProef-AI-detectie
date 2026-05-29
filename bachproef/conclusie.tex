@@ -5,14 +5,75 @@
 \chapter{Conclusie}%
 \label{ch:conclusie}
 
-% TODO: Trek een duidelijke conclusie, in de vorm van een antwoord op de
-% onderzoeksvra(a)g(en). Wat was jouw bijdrage aan het onderzoeksdomein en
-% hoe biedt dit meerwaarde aan het vakgebied/doelgroep? 
-% Reflecteer kritisch over het resultaat. In Engelse teksten wordt deze sectie
-% ``Discussion'' genoemd. Had je deze uitkomst verwacht? Zijn er zaken die nog
-% niet duidelijk zijn?
-% Heeft het onderzoek geleid tot nieuwe vragen die uitnodigen tot verder 
-%onderzoek?
+Dit onderzoek richtte zich op de kritieke taak om AI-gegenereerde gezichten en gemanipuleerde profielfoto's op een betrouwbare, generaliseerbare en uitlegbare manier te onderscheiden van authentieke visuele informatie. In dit afsluitende hoofdstuk worden de onderzoeksvragen beantwoord en de belangrijkste empirische bevindingen systematisch gekaderd.
 
-\lipsum[76-80]
+\section{Conclusie en Beantwoording van de Onderzoeksvragen}
 
+\subsection{Beantwoording van de Hoofdonderzoeksvraag}
+Als overkoepelend antwoord op de hoofdonderzoeksvraag toont deze studie aan dat betrouwbare deepfake-detectie in realistische scenario's niet berust op één universeel superieur model, maar vereist dat de complementaire sterktes van diverse netwerkarchitecturen (CNN, ViT en hybride) systematisch worden gecombineerd en rigoureus worden gekalibreerd via cross-dataset validatie en verhoogde beslissingsdrempels. Dit minimaliseert de generalisatiekloof en beschermt operationele workflows tegen kostbare foutieve classificaties.
+
+\subsection{Beantwoording van de Deelvragen}
+Om tot dit hoofdantwoord te komen, worden de drie geformuleerde deelvragen op basis van de experimentele resultaten als volgt beantwoord:
+\begin{enumerate}
+    \item \textbf{Prestaties van modelarchitecturen (Deelvraag 1):} Hoewel Vision Transformers (ViT) superieur presteren in het identificeren van complexe globale patronen op onbewerkte data, tonen hybride netwerken (ConvNeXt-Small) en convolutionele baselines (EfficientNet-B3) zich aanzienlijk efficiënter, stabieler en minder vatbaar voor acute overfitting op kleinere datasets.
+    \item \textbf{Geleerde visuele kenmerken (Deelvraag 2):} Via verklaarbaarheidscontroles is vastgesteld dat CNN's zich primair fixeren op fijnmazige, lokale textuurfouten en randartefacten bij manipulatiegrenzen, terwijl Transformers en hybride modellen hun beslissingen baseren op globale, geometrische inconsistenties en asymmetrieën in belichting.
+    \item \textbf{Invloed van realistische beeldbewerkingen (Deelvraag 3):} Realistische beelddegradaties, met name JPEG-compressie, hebben een destructieve impact op de nauwkeurigheid van detectors die uitsluitend leunen op hoogfrequente pixelcues, wat de absolute noodzaak onderbouwt van gerichte compressie-augmentatie en een verhoogde, conservatieve beslissingsdrempel (tot $T=0.90$).
+\end{enumerate}
+
+\subsection{Kernbevindingen van het Onderzoek}
+Uit de empirische evaluatie kunnen drie fundamentele kernconclusies helder worden geformuleerd:
+
+\subsubsection{1. Architecturale Complementariteit}
+Een combinatie van moderne architecturen biedt complementaire inzichten voor AI-detectie. Waar CNN's excelleren in het vangen van lokale, hoogfrequente artefacten, slagen ViT's erin om globale patronen en semantische structuren vast te leggen. Het hybride model balanceert beide benaderingen succesvol, waardoor het in wisselende operationele contexten de meest evenwichtige architecturale basis vormt.
+
+\subsubsection{2. De Generalisatieparadox en Impact van Dataruis}
+Cross-dataset evaluatie toont aan dat hoge prestaties op een trainingsdataset geen garantie bieden voor robuuste generalisatie in de praktijk. De waargenomen prestatieverschillen op de externe 140k-dataset ten opzichte van de DeepDetect-testset onthullen dat modellen snel neigen te overfitteren op dataset-specifieke artefacten (zoals unieke camera-eigenschappen of generatorruis) in plaats van pure manipulatiesignalen te leren. Dit bewijst dat cross-dataset validatie een verplichte methodologische standaard moet zijn.
+
+\subsubsection{3. Operationele Inzetbaarheid en Beslissingsoptimalisatie}
+Robuustheidsanalyses en Explainable AI (XAI) leveren cruciale parameters voor feitelijke deployment. JPEG-compressie wist subtiele forensische cues uit, wat de inzetbaarheid van puur textuurafhankelijke modellen beperkt. Grad-CAM++ heatmaps maken de beslissingsgronden transparant, wat essentieel is voor menselijke audit. Tot slot blijkt de standaard drempelwaarde van $P(\text{fake}) > 0.5$ suboptimaal; een analytisch geoptimaliseerde, hogere drempel reduceert het aantal maatschappelijk en economisch kostbare \emph{false positives} drastisch, zonder kritiek verlies van recall.
+
+\subsection{Bijdrage en Beperkingen}
+De bijdrage van dit werk is drieledig: (1) een systematische vergelijking van drie architectuurfamilies voor AI-detectie, (2) empirisch bewijs dat cross-dataset-evaluatie cruciaal is voor realistische prestaties en (3) praktische aanbevelingen voor robuustheid en interpretatie (augmentatie, thresholding, Grad-CAM-analyses).
+
+Beperkingen van deze studie zijn onder meer het gebruik van publiek beschikbare datasets die impliciete bias kunnen bevatten, en de computationele restricties (rekenlimieten) die uitgebreidere hyperparameter-tuning of complexe ensemble-methoden binnen dit project bemoeilijkten. 
+
+Samengevat is de voorgestelde methodologie veelbelovend voor het detecteren van AI-gegenereerde gezichten onder gecontroleerde en deels geruisde omstandigheden. Echte productierijping vereist echter permanente cross-dataset validatie, continue monitoring van datasetverschuivingen en de structurele integratie van uitlegbaarheidscontroles in de operationele praktijk.
+
+\section{Kritische Reflectie}
+
+Had je deze resultaten verwacht? Deels ja, deels nee. Verwacht was dat moderne architecturen (CNN, ViT, hybride) beter zouden presteren dan eenvoudige baselines, en dat cross-dataset evaluatie belangrijk zou zijn. Dit werd bevestigd.
+
+Onverwacht was echter de observatie dat scores op de externe 140k-dataset beter waren dan op de DeepDetect-testset. Dit wijst erop dat de DeepDetect-dataset specifieke artefacten bevat (mogelijk: belichting, cameraposities, generatortypen) waaraan modellen kunnen overfitteren, in plaats van echte manipulatiesignalen te leren. Dat is eigenlijk een kritieke waarschuwing voor het vakgebied: \textit{hoge trainingsaccuracy garandeert niet echte robuustheid}.
+
+Zaken die nog niet volledig duidelijk zijn en verdere diagnostics vereisen:
+\begin{itemize}
+    \item \textbf{Dataset-artefacten:} Welke specifieke visuele of statistische kenmerken in DeepDetect veroorzaken de hoge false positive rates? Een gedetailleerde feature- en frequentie-analyse zou dit kunnen ophelderen.
+    \item \textbf{Generatorspecificiteit:} Generaliseren modellen inherent beter naar commerciële closed-source generatoren (bv. Midjourney, DALL-E) dan naar specifieke open-source generatoren? Dit vereist tests met meer gefragmenteerde datasets.
+    \item \textbf{Video vs. Statische Beelden:} Dit onderzoek focust strikt op gezichten in statische beelden. Hoe presteren dezélfde specifieke modellen en weights wanneer ze frame-per-frame worden toegepast op video-deepfakes?
+    \item \textbf{Kalibratie en Onzekerheidsmodellering:} De confidence-histogrammen geven aan dat modellen niet altijd betrouwbaar gekalibreerd zijn. In hoeverre kunnen probabilistische kalibratietechnieken (bv. temperature scaling) de betrouwbaarheid van de kansberekening post-training optimaliseren?
+\end{itemize}
+
+\section{Nieuw Onderzoek}
+
+Dit onderzoek opent vier interessante en noodzakelijke richtingen voor vervolgwerk binnen het domein van de beeldforensiek:
+
+\begin{enumerate}
+    \item \textbf{Causale Analyse van Fouten:} Welke exacte pixelclusters zijn mathematisch verantwoordelijk voor valse positives? Onderzoek naar adversarial robustness-technieken kan helpen om netwerken actiever te beschermen tegen het aanleren van irrelevante dataset-artefacten.
+    
+    \item \textbf{Multi-Modaliteit:} Kan het combineren van de beeld-only pipeline met aanvullende informatie (zoals gezichtslandmarks, geometrische vectoren, metadata of audio-synchronisatie in het geval van video) de algehele detectiekracht en fraudebestendigheid verhogen?
+    
+    \item \textbf{Real-World Deployment en Governance:} Hoe wordt een dergelijk forensisch AI-systeem effectief en ethisch verantwoord ingezet in de praktijk (zoals op sociale media platforms of binnen juridische contexten)? Welke wet- en regelgeving, auditsporen en governancestructuren zijn vereist voor geautomatiseerde moderatie?
+    
+    \item \textbf{General-Purpose versus Domeinspecifieke Detectie:} Een fundamentele vraag voor de toekomst van deepfake-detectie is of er ingezet moet worden op universele \emph{general-purpose} modellen, dan wel op gespecialiseerde netwerken. Waar dit onderzoek zich strikt heeft afgebakend tot menselijke gezichten, is het waardevol om te onderzoeken in hoeverre de geleerde discriminatieve patronen overdraagbaar zijn naar andere subjecten (zoals objecten of landschappen). Daarnaast verdient het aanbeveling om de relatie tussen het subject en de beeldkwaliteit verder te analyseren: presteren specifieke architecturen inherent beter op onbewerkte HD-foto's, of slagen zij er juist beter in om kritieke semantische inconsistenties te bewaren binnen de zwaar gecomprimeerde beeldbestanden van sociale media?
+    
+    Deze discussie is extra relevant omdat dit onderzoek zich expliciet heeft beperkt tot menselijke gezichten (profielfoto's); beeldkwaliteit, framing en onderwerpkeuze kunnen de overdraagbaarheid en praktijktests van modellen sterk beïnvloeden.
+\end{enumerate}
+
+\section{Aanbevelingen}
+
+Op basis van de empirische en praktische bevindingen van deze bachelorproef worden de volgende drie strategische aanbevelingen geformuleerd voor IT-professionals en organisaties:
+\begin{itemize}
+    \item \textbf{Verplichte Cross-Dataset Validatie:} Neem cross-dataset evaluatie standaard op als vaste prestatie-indicator bij het benchmarken en selecteren van deepfake-detectoren om catastrofale overfitting op laboratoriumomgevingen te voorkomen.
+    \item \textbf{Standaardisatie van XAI-Audits:} Integreer Grad-CAM++ of vergelijkbare visualisatietools structureel in het audit- en moderatieproces. Dit stelt teams in staat om systematische fouten en dataset-biases vroegtijdig te identificeren en de acceptatie door niet-technische stakeholders te vergroten.
+    \item \textbf{Contextafhankelijke Drempelkalibratie:} Introduceer dynamische en conservatieve beslissingsregels ($T \ge 0.87$) in productie-omgevingen. In operationele scenario's waar een false positive hoge maatschappelijke of reputatie-impact heeft, moet prioriteit worden gegeven aan precisie boven een standaardschema van $0.5$.
+\end{itemize}

@@ -6,8 +6,8 @@ Dit hoofdstuk bouwt verder op de probleemstelling uit de inleiding en onderbouwt
 \section{Afbakening van het onderzoeksdomein}
 De term \emph{deepfake} verwees oorspronkelijk vooral naar gemanipuleerde video's, maar wordt in recente literatuur ook gebruikt voor synthetische of gemanipuleerde stilstaande beelden~\autocite{MultimodalSurvey2025,Pei2024}. In deze bachelorproef ligt de focus op beeldforensische detectie van twee hoofdklassen:
 \begin{itemize}
-  \item volledig AI-gegenereerde afbeeldingen (bv.~diffusion-output),
-  \item partieel AI-gemanipuleerde afbeeldingen (bv.~generative fill, inpainting, face replacement).
+  \item volledig AI-gegenereerde profielfoto's (bv.~diffusion-output),
+  \item partieel AI-gemanipuleerde profielfoto's (bv.~generative fill, inpainting, face replacement).
 \end{itemize}
 
 Deze afbakening is relevant omdat beide klassen in praktijk verschillende detectiesignalen vertonen. Volledig synthetische beelden laten vaker globale statistische afwijkingen zien, terwijl partiële manipulaties eerder lokale inconsistenties introduceren aan grenzen, texturen of semantische overgangszones~\autocite{WangDIRE2023,SIDA2025}. De keuze om op stilstaand beeld te focussen is verder verdedigbaar omdat veel operationele contexten (profielbeelden, nieuwsbeelden, e-commercefoto's, bewijsfoto's) geen videosequenties of audiokanalen bevatten, waardoor multimodale signalen niet beschikbaar zijn~\autocite{MultimodalSurvey2025}.
@@ -44,7 +44,7 @@ Convolutional Neural Networks domineren historisch de eerste generatie deepfake-
 
 Tegelijk rapporteren meerdere studies dat CNN's gevoelig zijn voor datasetbias en beperkte transfer naar ongeziene generatoren~\autocite{Pei2024,EvaluationModels2025}. Wanneer een model impliciet leert vertrouwen op bron-specifieke artefacten, ontstaat overfitting op manipulatietypes die in de trainingsdata domineren. Daarnaast verlaagt sterke compressie de betrouwbaarheid van subtiele textuurkenmerken, wat vooral bij platformbeelden problematisch is~\autocite{CompressionHybrid2025}.
 
-Desondanks blijven CNN's relevant omwille van hun relatief lage rekenkost, maturiteit in tooling en goede prestaties in resource-beperkte omgevingen. In operationele settings met strikte latency-eisen vormen ze vaak een sterke baseline.
+Desondanks blijven CNN's relevant omwille van hun relatief lage rekenkost, maturiteit in tooling en goede prestaties in resource-beperkte omgevingen~\autocite{Raza2026,CompressionHybrid2025}. In operationele settings met strikte latency-eisen vormen ze vaak een sterke baseline.
 
 \subsection{Vision Transformers voor globale consistentie}
 Vision Transformers (ViT's) verwerken beelden als sequenties van patches met self-attention, waardoor ze lange-afstandsrelaties en globale consistentie explicieter modelleren dan klassieke convoluties. Voor deepfake-detectie is dat relevant bij semantische of structurele inconsistenties die niet louter plaatselijk zijn~\autocite{QuantumViT2025,CNNViTCompare2026}.
@@ -69,7 +69,7 @@ Parallel onderzoeken verschillende auteurs foundation features zoals CLIP-repres
 \section{Datasets: fundament en bottleneck}
 
 \subsection{Historische rol van FaceForensics++}
-FaceForensics++ blijft een referentiebenchmark in veel studies en heeft het veld aanzienlijk vooruitgeholpen door gestandaardiseerde evaluatie mogelijk te maken~\autocite{Rossler2019}. Het zwakke punt is echter dat de dataset vooral oudere manipulatieprocedures omvat, waardoor performantie op deze benchmark geen garantie biedt voor actuele inzetbaarheid.
+FaceForensics++ is nog steeds een bekende standaardtest in veel onderzoeken. Het heeft het vakgebied enorm geholpen omdat onderzoekers hun systemen zo eerlijk met elkaar konden vergelijken~\autocite{Rossler2019}. Het zwakke punt is echter dat deze collectie vooral oude manieren van beeldbewerking bevat. Een hoge score op deze test betekent dus niet automatisch dat de software ook klaar is voor gebruik in de wereld van nu.
 
 De literatuur waarschuwt daarom voor \emph{benchmark overfitting}: modellen optimaliseren op de eigenaardigheden van enkele dominante datasets in plaats van op onderliggende manipulatieprincipes~\autocite{Pei2024,EvaluationModels2025}. Dit probleem is bijzonder relevant voor bachelorproeven en toegepaste projecten, waar een te beperkte dataset snel tot overschatte conclusies kan leiden.
 
@@ -131,10 +131,9 @@ In gevoelige toepassingen is een binaire voorspelling onvoldoende. Gebruikers wi
 Gangbare technieken zijn attention visualisaties, saliency maps en activatie-gebaseerde heatmaps. Ze kunnen indicatief tonen welke regio's bijdragen aan een beslissing, maar blijven gevoelig voor methodologische valkuilen (instabiliteit tussen runs, oversimplificatie van causale mechanismen)~\autocite{SIDA2025}. De literatuur adviseert daarom om visualisaties te gebruiken als ondersteunend diagnostisch instrument, niet als sluitend bewijs.
 
 \section{Multimodale tendensen en relevantie voor beeld-only detectie}
-Een deel van het recente onderzoek verschuift richting multimodale detectie (beeld, audio, tekst, metadata), omdat gecombineerde signalen detectiekracht kunnen verhogen~\autocite{MultimodalSurvey2025,CAST2025}. Voor veel praktijkscenario's met enkel stilstaand beeld blijft echter een \emph{image-only} aanpak noodzakelijk.
+Een deel van het recente onderzoek verschuift richting multimodale detectie (beeld, audio, tekst, metadata), omdat gecombineerde signalen de detectiekracht kunnen verhogen~\autocite{MultimodalSurvey2025,CAST2025}. Voor veel praktijkscenario's met enkel stilstaand beeld blijft echter een \emph{image-only} aanpak noodzakelijk.
 
-De implicatie voor dit onderzoek is tweevoudig. Enerzijds kan toekomstige uitbreiding naar multimodale pipelines interessant zijn. Anderzijds moet de huidige modelselectie realistisch blijven voor contexten waar enkel een afbeelding beschikbaar is. Dit versterkt de keuze om CNN-, ViT- en hybride beeldmodellen systematisch te vergelijken.
-
+De implicatie voor dit onderzoek is tweevoudig. Enerzijds kan toekomstige uitbreiding naar multimodale pipelines interessant zijn. Anderzijds moet de huidige modelselectie realistisch blijven voor contexten waar enkel een afbeelding beschikbaar is. Deze bevindingen suggereren dat een effectieve aanpak vereist dat de specifieke sterktes van verschillende beeldarchitecturen kritisch tegen elkaar worden afgewogen. Uit deze literatuurstudie vloeit dan ook rechtstreeks de methodologische keuze voort om CNN-, ViT- en hybride beeldmodellen systematisch te evalueren en met elkaar te vergelijken.
 \section{Trainingsstrategieën die in literatuur generalisatie verbeteren}
 
 \subsection{Data-augmentatie als eerste verdedigingslaag}
@@ -148,7 +147,7 @@ Door beperkte of onevenwichtige detectiedatasets gebruiken veel onderzoekers tra
 In recente literatuur groeit daarnaast interesse in foundation-features, bijvoorbeeld CLIP-gebaseerde representaties, om de generalisatie over ongeziene content te versterken~\autocite{CLIPDeepfake2025}. Het onderliggende argument is dat breed voorgetrainde representaties semantisch rijker zijn en minder snel vastlopen op één datasetstijl. Toch blijft voorzichtigheid nodig: foundation-modellen lossen datasetbias niet automatisch op en kunnen zelf nieuwe biases introduceren wanneer bepaalde beeldstijlen onder- of oververtegenwoordigd zijn.
 
 \subsection{Curriculum, hard negatives en foutgestuurde iteratie}
-Meerdere onderzoekslijnen suggereren dat een gefaseerde trainingsstrategie kan helpen: eerst leren op relatief duidelijke voorbeelden, daarna progressief moeilijkere gevallen toevoegen. In deepfake-detectie vertaalt dit zich naar het opnemen van \emph{hard negatives}: authentieke beelden die visueel dicht bij manipulatiewaarnemingen liggen, en omgekeerd moeilijk detecteerbare manipulaties~\autocite{OpenSet2025,EvaluationModels2025}. 
+Meerdere onderzoekslijnen suggereren dat een gefaseerde trainingsstrategie kan helpen: eerst leren op relatief duidelijke voorbeelden, daarna progressief moeilijkere gevallen toevoegen. In deepfake-detectie vertaalt dit zich naar het opnemen van \emph{hard negatives}: authentieke beelden die visueel dicht bij manipulatiewaarnemingen liggen, en omgekeerd moeilijk detecteerbare manipulaties~\autocite{OpenSet2025,EvaluationModels2025}. Dit onderzoek volgt deze redenering: de trainingsopzet implementeert een curriculum-achtige fasering en maakt gebruik van hard negatives en foutgestuurde iteraties om domeinverschuivingen gerichter aan te pakken.
 
 Een foutgestuurde iteratie sluit daar op aan. Modellen worden periodiek geëvalueerd op foutclusters (bv.~specifieke compressiegraden, bepaalde beeldcategorieën, of specifieke generators), waarna de trainingsset gericht wordt aangevuld. De literatuur beschouwt dit als een pragmatische manier om domeinverschuiving stapsgewijs op te vangen zonder het volledige systeem telkens vanaf nul te hertrainen.
 
@@ -237,7 +236,7 @@ Deze principes sluiten aan bij een iteratieve onderzoeksstrategie waarin datasel
 \section{Onderzoekshiaten en positionering van de bachelorproef}
 
 \subsection{Hiaat 1: Beperkte generalisatie naar nieuwe generatiemodellen}
-Ondanks sterke benchmarkresultaten blijft transfer naar onbekende of recente generatietechnieken een centraal probleem~\autocite{Hasan2026,Pei2024}. Veel modellen leren impliciet sporen van de trainingsbron in plaats van robuuste manipulatiekenmerken. Deze bachelorproef adresseert dat hiaat via datasetdiversiteit en een vergelijkende evaluatie over meerdere modeltypes.
+Ondanks sterke benchmarkresultaten blijft transfer naar onbekende of recente generatietechnieken een centraal probleem~\autocite{Hasan2026,Pei2024}. Veel modellen leren impliciet specifieke sporen van de trainingsbron in plaats van robuuste manipulatiekenmerken. Dit probleem hangt bovendien sterk samen met de inhoudelijke afbakening van de afbeeldingen. Waar \emph{general-purpose} detectiemodellen vaak falen door een te brede variatie aan visuele onderwerpen, dwingt de focus op een specifiek subject tot diepere, semantische patroonherkenning. Deze bachelorproef adresseert dit hiaat door de scope bewust te vernauwen tot menselijke gezichten (profielfoto's). Hierdoor worden de modellen uitgedaagd om, via gerichte datasetdiversiteit en een cross-dataset evaluatie, modelonafhankelijke anatomische en textonische inconsistenties te identificeren.
 
 \subsection{Hiaat 2: Onvoldoende aandacht voor realistische degradatie}
 Veel papers rapporteren prestaties op relatief zuivere data, terwijl operationele beelden vaak gecomprimeerd, verkleind of gefilterd zijn. Hierdoor ontstaat een kloof tussen academische en praktische performantie~\autocite{CompressionHybrid2025,EvaluationModels2025}. Dit onderzoek maakt robuustheidsmeting expliciet onderdeel van de kernmethodologie.

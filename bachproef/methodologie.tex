@@ -5,10 +5,23 @@
 \chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
 \label{ch:methodologie}
 
-De methodologie van dit onderzoek is opgebouwd als een iteratief onderzoeks- en ontwikkeltraject dat in vier hoofdfasen wordt uitgevoerd. Elke fase levert een concreet deelresultaat op dat als input dient voor de volgende stap. Deze proefondervindelijke en experimentele aanpak is essentieel omdat het evalueren van machine learning-modellen voor AI-detectie een continu proces is van dataverzameling, preprocessing, modeltraining, robuustheidstesting en interpretatie. De gekozen methoden zijn sterk kwantitatief onderbouwd en sluiten aan bij de best practices uit actueel academisch onderzoek naar deepfake-detectie.
+De methodologie van dit onderzoek is opgebouwd als een iteratief onderzoeks- en ontwikkeltraject dat proefondervindelijk en experimenteel van aard is. Het evalueren van machine learning-modellen voor AI-detectie is immers een continu en dynamisch proces waarin dataverzameling, preprocessing, training en robuustheidstests elkaar constant beïnvloeden. De gekozen kwantitatieve methoden sluiten aan bij de actuele academische \emph{best practices} binnen het domein van deepfake-detectie.
 
-De gehele implementatie is uitgevoerd in \textbf{Python 3.10+} met behulp van \textit{PyTorch}, \textit{scikit-learn}, \textit{timm} (PyTorch Image Models) en \textit{Grad-CAM}. De trainingen zijn uitgevoerd op Google Colab met GPU-acceleratie (NVIDIA T4), met speciale aandacht voor hardwareoptimalisatie om out-of-memory crashes te voorkomen.
+Om de lezer vanaf de start overzicht en context te bieden binnen deze technische uitwerking, is het gehele onderzoek gestructureerd rond vier opeenvolgende en onderling afhankelijke hoofdfasen. Elke fase levert een concreet deelresultaat op dat als essentieel fundament dient voor de daaropvolgende stap:
 
+\begin{enumerate}
+    \item \textbf{Fase 1: Dataverzameling, Analyse en Pre-processing.} In deze fase wordt de databasis gelegd. Dit omvat de selectie en statistische analyse van de datasets, het oplossen van klasse-onbalans, het inrichten van de pre-processing- en augmentatiepijplijn, en de noodzakelijke hardware-optimalisaties voor een stabiele uitvoering zonder systeemcrashes.
+    \item \textbf{Fase 2: Modelarchitectuur, Training en Evaluatie.} Hier worden de drie complementaire modelarchitecturen (CNN, Vision Transformer en het hybride model) systematisch opgebouwd via een factory-functie en getraind onder geoptimaliseerde hyperparameters, waarna hun trainingsproces wiskundig wordt gekalibreerd.
+    \item \textbf{Fase 3: Robuustheidsanalyse en Cross-Dataset Generalisatie.} Om de praktische inzetbaarheid in realistische scenario's te toetsen, worden de getrainde modellen onderworpen aan synthetische beelddegradatie (JPEG-compressie) en geëvalueerd op een volledig ongeziene, onafhankelijke externe dataset.
+    \item \textbf{Fase 4: Explainable AI en Beslissingsoptimalisatie.} Tot slot wordt het \emph{black-box}-probleem van Deep Learning doorbroken. Via Grad-CAM++ heatmaps wordt visueel geanalyseerd \textit{waarom} modellen bepaalde beslissingen nemen en waar hun blinde vlekken liggen (\emph{most confident errors}), waarna de beslissingsdrempels analytisch worden geoptimaliseerd voor operationeel gebruik.
+\end{enumerate}
+
+Deze gefaseerde opzet leidt tot een compleet en geïntegreerd plaatje: het onthult niet alleen \textit{hoe goed} de geselecteerde modellen presteren, maar biedt tevens diepgaand technisch inzicht in \textit{waarom} ze dat doen, \textit{waar} hun specifieke kwetsbaarheden liggen, en \textit{hoe} ze betrouwbaar en effectief kunnen worden ingezet in een operationele IT-workflow.
+
+De gehele technische implementatie van deze fasen is uitgevoerd in Python 3.10+ met behulp van robuuste frameworks en bibliotheken zoals PyTorch, scikit-learn, \texttt{timm} (PyTorch Image Models) en de \texttt{pytorch-grad-cam} toolkit. De rekenintensieve trainingen en experimenten zijn uitgevoerd binnen een cloud-gebaseerde Google Colab-omgeving met GPU-acceleratie (NVIDIA T4). In de volgende secties wordt de exacte praktische invulling van elk van deze vier fasen gedetailleerd uiteengezet.
+
+%% Hierna loopt je document direct door in:
+%% \section{Fase 1: Dataverzameling, Analyse en Pre-processing}
 %% =============================================================================
 %% FASE 1: DATASET OPBOUWEN & PRE-PROCESSING
 %% =============================================================================
@@ -44,7 +57,11 @@ Deze tweeledige aanpak volgt het \textit{generalisatie-paradoxon}: een model met
 
 Voordat training plaatsvindt, zijn uitgebreide analysefuncties toegepast om de dataset-karakteristieken te begrijpen. De volgende parameters zijn gemeten:
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/dataset_analysis.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/dataset_analysis.py}
+    \caption{Python script voor het verzamelen van de dataset-statistieken.}
+    \label{lst:dataset_analyse}
+\end{listing}
 
 %Figuur \ref{fig:dataset_distribution} toont de klasse-verdeling van de DeepDetect-2025 trainingsset. Dit visualiseert eventuele klasse-onbalans, die gecorrigeerd moet worden via \textit{WeightedRandomSampler} in PyTorch.
 \begin{figure}[H]
@@ -52,6 +69,7 @@ Voordat training plaatsvindt, zijn uitgebreide analysefuncties toegepast om de d
     \includegraphics[width=0.9\textwidth]{../ipynb_output/ViT_results/dataset_distribution.png}
     \centerline{\small (a) DeepDetect-2025}
     \caption[Verdeling van de dataset]{Barchart en piechart van de klasse-verdeling, dit visualiseert eventuele klasse-onbalans.}
+    \label{fig:dataset_distribution}
 \end{figure}
 % TODO: Genereer en voeg figuur in: dataset_distribution.png (class distribution bar chart)
 
@@ -89,14 +107,22 @@ Voordat afbeeldingen de neurale netwerken bereiken, ondergaan zij een gestandaar
     \item \textbf{Geen augmentatie voor Validatie/Test:} Deze sets gebruiken alleen resize + normalisatie voor objectieve evaluatie.
 \end{enumerate}
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/transforms.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/transforms.py}
+    \caption{Python script voor de preprocessing- en augmentatiepipeline.}
+    \label{lst:transforms}
+\end{listing}
 
 \subsection{Hardware-optimalisatie: Oplossing voor Out-of-Memory Crashes}
 
 Tijdens implementatie op Google Colab ontstonden kritieke out-of-memory (OOM) crashes bij het parallel inladen van tienduizenden afbeeldingen. De root cause was het gebruik van \texttt{num\_workers > 0}, wat sub-processen spawnt die elk volledige batches in het RAM bufferen.
 
 De oplossing:
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/dataloader_fix.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/dataloader_fix.py}
+    \caption{Python script voor de hardware-optimalisatie van de dataloader.}
+    \label{lst:dataloader_fix}
+\end{listing}
 
 Dit toont het belang van het afstemmen van software-architectuur op beschikbare hardware-resources.
 
@@ -138,7 +164,11 @@ In deze fase worden drie verschillende neurale netwerkarchitecturen geselecteerd
 
 De drie modellen worden dynamisch opgebouwd via een factory-functie, waarbij de pretrained ImageNet-gewichten worden geladen en de laatste classificatielaag wordt vervangen voor binaire classificatie (real vs. fake):
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/build_model.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/build_model.py}
+    \caption{Python script voor de dynamische modelconstructie.}
+    \label{lst:build_model}
+\end{listing}
 
 Tabel \ref{tab:model_comparison} geeft een samenvatting van de modelparameters. Opgemerkt wordt dat ViT significant meer parameters heeft (86M vs. 12M voor CNN), wat impliceert dat ViT gevoeliger kan zijn voor overfitting op kleine datasets.
 
@@ -186,26 +216,13 @@ Gradient Clip & 1.0 (max norm) \\
     \item \textbf{Cross-Entropy Loss:} Standaard voor multi-class classificatie met logits-output.
 \end{itemize}
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/training_loop.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/training_loop.py}
+    \caption{Python script voor de trainingsloop en evaluatiestructuur.}
+    \label{lst:training_loop}
+\end{listing}
 
-%Figuur \ref{fig:training_curves} toont de training-curves voor alle drie modellen. Deze visualisaties zijn essentieel voor het detecteren van overfitting (wanneer val_loss stijgt terwijl train_loss daalt) of underfitting.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{../ipynb_output/ViT_results/training_curves.png}
-    \centerline{\small (a) Training Curves voor ViT-Base/16 op DeepDetect-2025}
-    
-    \vspace{1cm}
-    
-    \includegraphics[width=0.9\textwidth]{../ipynb_output/CNN_results/training_curves.png}
-    \centerline{\small (b) Training Curves voor CNN op DeepDetect-2025}
-
-    \vspace{1cm}
-    
-    \includegraphics[width=0.9\textwidth]{../ipynb_output/Hybrid_results/training_curves.png}
-    \centerline{\small (c) Training Curves voor Hybride model op DeepDetect-2025}
-    
-    \caption[Training Curves op DeepDetect-2025]{Training Curves voor de DeepDetect-2025 dataset. Deze figuren tonen hoe elk model presteert.}
-\end{figure}
+De trainingsopzet en de gebruikte trainingsloop worden hierboven beschreven; de feitelijke trainingscurves en hun kwantitatieve analyse zijn opgenomen in Hoofdstuk \ref{ch:resultaten}.
 % TODO: Genereer en voeg figuur in: training_curves.png (train/val loss en accuracy per epoch)
 
 \subsection{Evaluatiemetrieken en Wiskundige Verantwoording}
@@ -250,7 +267,7 @@ De basis van alle metrieken is de \textbf{Confusion Matrix}, opgebouwd uit vier 
     $$\text{ROC-AUC} = \int_0^1 \text{TPR}(t) \, d(\text{FPR}(t))$$
     AUC geeft aan hoe goed het model de twee klassen scheidt, onafhankelijk van de drempel.
     
-    \item \textbf{Average Precision (AP) / PR-AUC:} Integreert de Precision-Recall curve. Dit is **nog belangrijker dan ROC-AUC** voor ongebalanceerde datasets omdat het meer gewicht geeft aan precision (vermijding van false positives):
+    \item \textbf{Average Precision (AP) / PR-AUC:} Integreert de Precision-Recall curve. Dit is \textbf{nog belangrijker dan ROC-AUC} voor ongebalanceerde datasets omdat het meer gewicht geeft aan precision (vermijding van false positives):
     $$\text{AP} = \int_0^1 \text{Precision}(t) \, d(\text{Recall}(t))$$
 \end{enumerate}
 
@@ -265,21 +282,37 @@ De ROC-curve is symmetrisch t.o.v. beide klassen: het weegt false positives en t
 
 De PR-curve weegt false positives zwaarder, wat beter aansluit bij de praktische behoeften van het systeem.
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/eval_function.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/eval_function.py}
+    \caption{Python script voor de evaluatiemetrieken en scoreberekening.}
+    \label{lst:eval_function}
+\end{listing}
 
-%Figuur \ref{fig:confusion_matrices} toont de confusion matrices voor DeepDetect-2025 en de 140k Real and Fake Faces dataset. Figuur \ref{fig:roc_pr_curves} toont de ROC- en PR-curves.
+De prestatie van een deepfake-detector wordt hier niet met één enkele score beoordeeld, maar via een combinatie van absolute prestatie, klasse-gebonden foutanalyse en generalisatiegedrag. Daarom worden de confusion matrix, accuracy, F1-score, ROC-AUC, PR-AUC en de threshold-analyse samen geïnterpreteerd. Waar accuracy het globale aantal correcte voorspellingen samenvat, maakt F1 duidelijk hoe goed precision en recall in balans blijven; ROC en PR tonen dan weer hoe stabiel het model blijft wanneer de beslissingsdrempel varieert.
+
+% ROC/PR-curves, cross-dataset confusion matrices en vergelijkende metrics zijn verplaatst naar Hoofdstuk \ref{ch:resultaten}. De methodologische beschrijving van de gebruikte metrieken blijft hierboven staan.
+
+\subsection{Generalisatie in Accuracy en F1}
+
+De confusion matrices leggen de foutstructuur bloot, maar de algemene impact op prestatie wordt nog duidelijker in de accuracy- en F1-figuren. Figuur \ref{fig:accuracy_f1_comparison} toont dat alle modellen op de 140k-dataset een hogere accuracy halen dan op DeepDetect. Figuur \ref{fig:accuracy_f1_comparison} bevestigt hetzelfde patroon op de leidende metriek van dit onderzoek: ook de F1-score ligt consequent hoger op 140k. Samen tonen deze figuren aan dat de modellen op DeepDetect meer last hebben van dataset-specifieke artefacten dan van echte classificatie-ambiguïteit.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{../ipynb_output/confusion_matrices/CM_DeepDetect.png}
-    \centerline{\small (a) DeepDetect-2025}
-    
-    \vspace{1cm}
-    
-    \includegraphics[width=0.9\textwidth]{../ipynb_output/confusion_matrices/CM_140k.png}
-    \centerline{\small (b) 140k Real and Fake Faces}
-    
-    \caption[Confusion matrices voor DeepDetect-2025 en 140k.]{Confusion matrices voor de DeepDetect-2025 dataset en de 140k Real and Fake Faces dataset. Deze figuren tonen hoe het model per dataset echte en nepbeelden classificeert.}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../ipynb_output/metrics/Accuracy_Drop.png}
+        \centerline{\scriptsize (a) Accuracy vergelijking}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../ipynb_output/metrics/F1_Drop.png}
+        \centerline{\scriptsize (b) F1-score vergelijking}
+    \end{minipage}
+    \caption[Accuracy- en F1-vergelijking tussen datasets]{Vergelijking van accuracy en F1-score op DeepDetect en 140k. Beide metrieken laten zien dat de modellen op 140k consistenter presteren dan op DeepDetect.}
+    \label{fig:accuracy_f1_comparison}
 \end{figure}
+
 % TODO: Genereer en voeg figuren in:
 % - confusion_matrices/CM_DeepDetect.png en confusion_matrices/CM_140k.png
 % - roc_pr_curves.png (ROC en PR curves voor alle modellen)
@@ -297,9 +330,13 @@ Modellen die hoog scoren in een laboratoriumomgeving presteren vaak aanzienlijk 
 
 JPEG is het meest voorkomende beeldformaat op internet. Bij opslag gebruikt JPEG lossy-compressie: de afbeelding wordt opgeslagen in blokken van 8×8 pixels, en hoogfrequente details (vooral fijne textuur) worden verwijderd.
 
-Onze hypothese: **CNN's (die sterk afhankelijk zijn van hoogfrequente ruis-patronen van GAN's) zullen sneller degraderen dan ViT's (die op globale patternherkenning focussen).**
+Onze hypothese: \textbf{CNN's (die sterk afhankelijk zijn van hoogfrequente ruis-patronen van GAN's) zullen sneller degraderen dan ViT's (die op globale patternherkenning focussen).}
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/jpeg_compression.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/jpeg_compression.py}
+    \caption{Python script voor het JPEG-robuustheidsexperiment.}
+    \label{lst:jpeg_compression}
+\end{listing}
 
 %Figuur \ref{fig:robustness_jpeg} toont de resultaten. Dit test niet alleen de modelprestaties, maar simuleert ook echte-wereld voorwaarden waarbij afbeeldingen meerdere keren gecomprimeerd worden.
 
@@ -307,7 +344,7 @@ Onze hypothese: **CNN's (die sterk afhankelijk zijn van hoogfrequente ruis-patro
 
 \subsection{De Ultieme Generalisatietest: Cross-Dataset Evaluatie}
 
-De tweede en kritiekste robuustheidstest is evaluatie op de **volledig ongeziene 140k Real and Fake Faces dataset**. Deze dataset is niet gebruikt voor training of validatie. Dit simuleert scenario's waarbij het deepfake-detectiesysteem wordt ingezet op foto's van volkomen andere bronnen (andere camera's, apps, generatoren).
+De tweede en kritiekste robuustheidstest is evaluatie op de \textbf{volledig ongeziene 140k Real and Fake Faces dataset}. Deze dataset is niet gebruikt voor training of validatie. Dit simuleert scenario's waarbij het deepfake-detectiesysteem wordt ingezet op foto's van volkomen andere bronnen (andere camera's, apps, generatoren).
 
 Dit is essentieel omdat:
 
@@ -320,6 +357,12 @@ Dit is essentieel omdat:
 \end{enumerate}
 
 De 140k dataset wordt op identieke wijze geëvalueerd als de DeepDetect testset: dezelfde pre-processing, dezelfde modellen, dezelfde metrieken. Het is echter verboden om de resulaten te gebruiken voor hyperparameter-tuning; dit zou leiden tot "test data leakage."
+
+\subsection{Metrieken voor Robustheid en Zelfzekerheid}
+
+Naast accuracy en F1 wordt ook de zelfzekerheid van het model geanalyseerd. De confidence-histogrammen tonen hoe de voorspelde kans op "fake" verdeeld is voor echte en fake beelden. Dat is belangrijk omdat een model niet alleen correct moet zijn, maar ook goed gekalibreerd: echte beelden horen lage fake-scores te krijgen, en fake beelden hoge fake-scores. In deze datasetvergelijking liggen de verdelingen op 140k duidelijk scherper uit elkaar dan op DeepDetect, wat opnieuw aangeeft dat 140k minder last heeft van verwarrende datasetartefacten.
+
+% Confidence-histogrammen en kalibratie-analyses (confidence distributions) zijn verplaatst naar Hoofdstuk \ref{ch:resultaten}.
 
 %% =============================================================================
 %% FASE 4: MODEL-INTERPRETATIE VIA GRAD-CAM
@@ -336,7 +379,7 @@ Het "black-box" probleem van deep learning is fundamenteel: ook al geeft een mod
     \item \textbf{Vertrouwen:} Gebruikers zijn voorzichtiger met systemen die hun beslissingen kunnen uitleggen.
 \end{itemize}
 
-De oplossing is \textbf{Explainable AI (XAI)}. Dit onderzoek implementeert **Grad-CAM++** (Gradient-weighted Class Activation Mapping++), een geavanceerde versie van Grad-CAM.
+De oplossing is \textbf{Explainable AI (XAI)}. Dit onderzoek implementeert \textbf{Grad-CAM++} (Gradient-weighted Class Activation Mapping++), een geavanceerde versie van Grad-CAM.
 
 \subsection{Grad-CAM Theorie}
 
@@ -344,27 +387,40 @@ Grad-CAM berekent de belangrijkheid van pixels door te meten hoe sterk gradiënt
 
 $$\text{Importance}_{i,j} = \sum_k \underbrace{\frac{\partial y_{\text{fake}}}{\partial A^k_{i,j}}}_{\text{Gradient naar pixel}} \cdot \underbrace{A^k_{i,j}}_{\text{Activatie}}$$
 
-Een hoge waarde betekent: **"Een kleine verandering in deze pixel zou grote verandering in de 'fake'-kans veroorzaken"** – dus het model focust erop.
+Een hoge waarde betekent: \textbf{"Een kleine verandering in deze pixel zou grote verandering in de 'fake'-kans veroorzaken"} – dus het model focust erop.
 
 Grad-CAM++ verbetert standaard Grad-CAM door multiple gradient-wegen te wegen, wat robuuster is tegen ruis.
 
 \subsection{Implementatie en Fout-selectie}
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/gradcam_impl.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/gradcam_impl.py}
+    \caption{Python script voor de Grad-CAM++ implementatie.}
+    \label{lst:gradcam_impl}
+\end{listing}
 
 % TODO: Genereer en voeg figuren in:
 % - gradcam_cnn.png (Grad-CAM++ heatmaps voor CNN)
 % - gradcam_vit.png (Grad-CAM++ heatmaps voor ViT)
 % - gradcam_hybrid.png (Grad-CAM++ heatmaps voor Hybrid)
 % Voeg deze in met \begin{figure} en \includegraphics
+\subsection{Grad-CAM Heatmap Analyse}
+
+In deze sectie worden de Grad-CAM++ heatmaps geanalyseerd voor de drie getrainde modellen. Voor elk model worden alle vier de scenario's van de confusion matrix visueel weergegeven: True Positive (TP), True Negative (TN), False Positive (FP), en False Negative (FN).
+
+% Illustratieve Grad-CAM++ heatmaps en visuele foutanalyses zijn verplaatst naar Hoofdstuk \ref{ch:resultaten}; de implementatie en methodologie blijven hier beschreven.
 
 \subsection{Fout-Analyse: Most Confident Errors}
 
 Een belangrijk inzicht: niet alle fouten zijn gelijk. Een model dat 60\% zeker is van een fout is anders dan één die 99\% zeker is.
 
-Dit onderzoek richt zich op **"most confident errors"** – fouten waarbij het model zeer hoog vertrouwen had. Dit zegt ons waar het model het hardst faalt:
+Dit onderzoek richt zich op \textbf{"most confident errors"} – fouten waarbij het model zeer hoog vertrouwen had. Dit zegt ons waar het model het hardst faalt:
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/confident_errors.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/confident_errors.py}
+    \caption{Python script voor de analyse van most confident errors.}
+    \label{lst:confident_errors}
+\end{listing}
 
 Dit biedt inzicht in welke soorten deepfakes het model mist, en kan gebruikt worden voor iteratieve modelverbetering.
 
@@ -374,7 +430,20 @@ Standaard classifiers gebruiken een drempel van 0.5: als $P(\text{fake}) > 0.5$,
 
 In deepfake-detectie kan een hogere drempel wenselijk zijn: liever 10 nep-foto's missen dan 1 echte foto onterecht beschuldigen (false positive).
 
-\inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/threshold_optim.py}
+\begin{listing}[H]
+    \inputminted[fontsize=\footnotesize, linenos, frame=lines]{python}{code/threshold_optim.py}
+    \caption{Python script voor de optimalisatie van de beslissingsdrempel.}
+    \label{lst:threshold_optim}
+\end{listing}
+
+De threshold-curve maakt dit expliciet: de optimale drempel verschilt per model, wat aantoont dat een vaste grens van 0.5 suboptimaal is. Uit de figuur blijkt dat ViT zijn hoogste F1-score haalt bij een drempel van 0.87, terwijl CNN en het hybride model hun beste F1-score bereiken rond 0.90. Dat bevestigt dat de modellen conservatiever moeten beslissen om false positives te beperken.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../ipynb_output/metrics/F1_Threshold_DeepDetect.png}
+    \caption[Threshold-optimalisatie op DeepDetect]{F1-score als functie van de beslissingsdrempel voor de drie modellen. De optimale drempel ligt hoger dan 0.5, vooral om false positives te beperken.}
+    \label{fig:threshold_analysis}
+\end{figure}
 
 %Figuur \ref{fig:threshold_analysis} toont deze analyse voor elk model.
 

@@ -10,7 +10,7 @@ De recente opkomst van geavanceerde generatieve AI-modellen, zoals Midjourney, A
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
 
-De huidige (traditionele) methoden om beeldmanipulatie te detecteren leunen vaak op technische metadata of de detectie van zichtbare, handmatige aanpassingen. Tegenover moderne generatieve AI-systemen blijken deze technieken echter steeds minder effectief. Daarnaast presteren detectiemodellen die in gecontroleerde omgevingen getraind zijn vaak suboptimaal wanneer beelden in de praktijk worden gecomprimeerd of geschaald, zoals op sociale media gebeurt. 
+De huidige (traditionele) methoden om beeldmanipulatie te detecteren leunen vaak op technische metadata of de detectie van zichtbare, handmatige aanpassingen. Tegenover moderne generatieve AI-systemen blijken deze technieken echter steeds minder effectief~\autocite{Pei2024}. Daarnaast presteren detectiemodellen die in gecontroleerde omgevingen getraind zijn vaak suboptimaal wanneer beelden in de praktijk worden gecomprimeerd of geschaald, zoals op sociale media gebeurt~\autocite{EvaluationModels2025}.
 
 De doelgroep van dit onderzoek bestaat primair uit IT-professionals en organisaties die grote hoeveelheden beeldmateriaal verwerken en behoefte hebben aan geautomatiseerde, datagedreven controle. Dit omvat specifiek:
 \begin{itemize}
@@ -18,7 +18,7 @@ De doelgroep van dit onderzoek bestaat primair uit IT-professionals en organisat
     \item Nieuwsredacties die de echtheid van ingezonden beeldmateriaal moeten garanderen.
     \item Onderwijsinstellingen en fotowedstrijden die ongeoorloofd AI-gebruik willen herkennen.
 \end{itemize}
-Zij hebben nood aan inzicht in welke detectiemethoden en modellen in de praktijk écht betrouwbaar blijven.
+Zij hebben nood aan inzicht in welke detectiemethoden en modellen in de praktijk écht betrouwbaar blijven~\autocite{MultimodalSurvey2025,Raza2026}.
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
@@ -26,12 +26,12 @@ Zij hebben nood aan inzicht in welke detectiemethoden en modellen in de praktijk
 Het doel van deze bachelorproef is tweeledig: ten eerste het vergelijken van verschillende modelarchitecturen voor deepfake-detectie, en ten tweede het analyseren van de invloed van realistische beeldbewerkingen op hun prestaties. De hoofdonderzoeksvraag luidt als volgt:
 
 \begin{quote}
-    \textit{Op welke manier kan artificiële intelligentie betrouwbaar onderscheid maken tussen authentieke en AI-gemanipuleerde beelden, en welke methoden of modellen leveren hierbij de hoogste nauwkeurigheid op?}
+    \textit{Welke AI-methoden en modelarchitecturen leveren de hoogste nauwkeurigheid op bij het betrouwbaar onderscheiden van authentieke en AI-gemanipuleerde beelden?}
 \end{quote}
 
 Om deze vraag te beantwoorden, worden de volgende deelvragen gehanteerd:
 \begin{enumerate}
-    \item In hoeverre presteren Vision Transformers (ViT) of hybride modellen beter dan uitsluitend op convoluties gebaseerde modellen (CNN's) bij het identificeren van moderne AI-generaties?
+    \item In hoeverre presteren modellen die het globale beeld analyseren beter dan modellen die focussen op lokale beelddetails bij het identificeren van moderne AI-generaties? Presteert een hybride model dat beide benaderingen combineert beter dan elk van de afzonderlijke modellen?
     \item Welke specifieke visuele patronen of kenmerken (zoals lokale artefacten of globale inconsistenties) leren deze modellen herkennen?
     \item Wat is de invloed van realistische beeldbewerkingen, zoals compressie en schaling, op de nauwkeurigheid en robuustheid van de getrainde modellen?
 \end{enumerate}
@@ -50,15 +50,12 @@ Het beoogde resultaat van deze bachelorproef is een vergelijkende studie, afgesl
 
 \section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
-
 De rest van deze bachelorproef is als volgt opgebouwd:
 
 In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein op basis van een literatuurstudie. Hierbij wordt ingegaan op generatieve AI, de evolutie van deepfakes en de theorie achter CNN's en Vision Transformers.
 
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht. Dit omvat de definitie van de detectiescope, de opbouw van de dataset en de opzet van de experimenten en robuustheidsanalyses.
+In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht. Dit omvat de definitie van de detectiescope, de opbouw van de dataset, de opzet van de experimenten en de beschrijving van de gebruikte analysemethoden voor evaluatie, robuustheid en uitlegbaarheid.
 
-In Hoofdstuk~\ref{ch:experimenten-en-resultaten} worden de experimentele resultaten gepresenteerd. De geselecteerde modellen worden met elkaar vergeleken, gevolgd door de analyse van hun prestaties onder invloed van compressie en schaling.
-
-In Hoofdstuk~\ref{ch:proof-of-concept} wordt de praktische toepasbaarheid geïllustreerd aan de hand van een proof-of-concept demonstratie van het best presterende model.
+In Hoofdstuk~\ref{ch:resultaten} worden de experimentele resultaten besproken. Daarin komen de trainingscurves, de cross-dataset evaluatie, de robuustheidsanalyse onder compressie, de Grad-CAM++-foutanalyse en de optimalisatie van de beslissingsdrempels aan bod.
 
 In Hoofdstuk~\ref{ch:conclusie}, ten slotte, wordt de algemene conclusie gegeven en een finaal antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
